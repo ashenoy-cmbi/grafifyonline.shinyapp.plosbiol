@@ -1,0 +1,17 @@
+Strain,Treatment,Block,GST
+NIH,Control,A,444
+NIH,Treated,A,614
+BALB/C,Control,A,423
+BALB/C,Treated,A,625
+A/J,Control,A,408
+A/J,Treated,A,856
+129/Ola,Control,A,447
+129/Ola,Treated,A,719
+NIH,Control,B,764
+NIH,Treated,B,831
+BALB/C,Control,B,586
+BALB/C,Treated,B,782
+A/J,Control,B,609
+A/J,Treated,B,1002
+129/Ola,Control,B,606
+129/Ola,Treated,B,766

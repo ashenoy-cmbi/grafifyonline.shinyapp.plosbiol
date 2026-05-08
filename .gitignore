@@ -1,0 +1,15 @@
+#Rstudio sessions
+.Rproj.user
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.positai
+.Rproj
+Shiny_trial.Rproj
+#shiny app
+rsconnect/
+#draft code
+Instructions_images/
+not_used/
+README.html
