@@ -18,7 +18,10 @@ Panel_Graphs <- list(fluidRow(
     tags$br(),
     card(
       card_header(
-        tags$h5("Add more variables to graph"),
+        div(class = "d-flex flex-column", #PBrvw
+            tags$h5("Add more variables to graph"),
+            tags$h6("Pick optional faceting or shape variables. Click 'Variables Chosen' to proceed.", 
+            class = "text-muted mt-1")),
         class = "d-flex justify-content-between",
         tooltip(
           bs_icon("info-circle"),
@@ -28,13 +31,17 @@ Panel_Graphs <- list(fluidRow(
       Graphs_card4_5 #src01Panelgraphs_card4_5.R
     ),
     column(12, card(card_header(
-      tags$h5("Graph choice & X-axis options")
+      div(class = "d-flex flex-column", #PBrvw
+          tags$h5("Graph choice & X-axis options"),
+          tags$h6("Choose graph type and optional settings. Press 'grafify my data' when ready.", 
+                  class = "text-muted mt-1")),
     ), Graphs_card6_7 #src01Panelgraphs_card6_7.R))
     ),
     column(
       12,
       card(card_header(
-          actionBttn(
+        div(class = "d-flex flex-column", #PBrvw
+            actionBttn(
             inputId = "makegraph",
             label = tags$strong("grafify my data"),
             width = "10px",
@@ -44,9 +51,11 @@ Panel_Graphs <- list(fluidRow(
             #block = TRUE,
             icon = bs_icon("power")
           ),
+        tags$h6("After graphing data, go to ANOVAs tab", 
+                  class = "text-muted mt-1")),
           tooltip(
             bs_icon("info-circle"),
-            "The height of this panel can be increased and the sidebar is collapsible. The size of graphs online (depends on your screen size and) does not affect the downloaded PDF. Use Height and Weight options below to resize downloads."
+            "The height of this panel can be increased and the sidebar is collapsible. The appearance of graphs depends on your screen size and does not match the downloaded PDF. Use Height and Width options to resize PDFs. The basic grafify R code for the graph appears below (without appearance options)."
           ),
           class = "d-flex justify-content-between"
         ),

@@ -9,7 +9,12 @@ Panel_DataVars <- list(fluidRow(column(
   )
 )),
 tags$br(),
-card(card_header(tags$h5("Data & variables")), value = 1, #tab panel for data & variables value 1
+card(card_header(
+  div(class = "d-flex flex-column",
+      tags$h5("Data & variables"),
+      tags$h6("Pick X and Y variables, and an optional Grouping factor, then go Graphs tab", 
+              class = "text-muted mt-1"))), 
+  value = 1, #tab panel for data & variables value 1
      fluidRow(
        column(3, fluidRow(
          column(12, htmlOutput("varsel1")), #app.R

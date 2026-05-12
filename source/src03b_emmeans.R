@@ -10,12 +10,16 @@ dep <- reactive({
   #get Grouping variable
   if(input$addVarsOpt == "Yes") g4 <- input$varsFour
   #get predictor when X is categorical 1way ANOVA
+  #PBrvw if (!is.null(g4) && g4 != "") paste(x, g4, sep = "*") else xE
   if(CatGp() == 0 & Xnum() == FALSE) dep1 <- x
   #get predictor when X is categorical 2way ANOVA
-  if(CatGp() == TRUE & Xnum() == FALSE) dep1 <- paste(x, g4, sep = "*")
+  if(CatGp() == TRUE & Xnum() == FALSE) dep1 <- if (!is.null(g4) && g4 != "") paste(x, g4, sep = "*") else x
+  #PBrvw
+  #predictor when X is categorical and CatGp is numeric 
+  if(CatGp() != TRUE & Xnum() == FALSE) dep1 <- if (!is.null(g4) && g4 != "") paste(x, g4, sep = "*") else x
   #get predictor when X is numeric w/o log
   if(Xnum() == TRUE & Ynum() == TRUE & CatGp() %in% c(TRUE, FALSE) &
-     !input$logTransX %in% c("log10", "log2")) {dep1 <- paste(x, g4, sep = "*")}
+     !input$logTransX %in% c("log10", "log2")) {dep1 <- if (!is.null(g4) && g4 != "") paste(x, g4, sep = "*") else x}
   #get predictor when X is numeric w/ log10
   if(Xnum() == TRUE & Ynum() == TRUE & CatGp() %in% c(TRUE, FALSE) &
      input$logTransX == "log10") {dep1 <- paste(paste0("log10(", x, ")"), g4, sep = "*")}

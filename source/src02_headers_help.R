@@ -39,8 +39,13 @@ output$dataHelpOpen <- renderText({ #in use on landing page
         tags$strong("Boxes 4-8"),
         "."
       ),
-      tags$li(
-        "If using example data with a categorical X-axis, try the following: Box 1: manufacturer, Box 2: displ; Box 3: Yes, Box 3.1: drv. Or for a numeric XY plot try: Box 1: cty, Box 2: hwy, Box 3: Yes and Box 3.1: either manufacturer or displ.")
+      tags$li( #PBrvw
+        tags$strong("Description of example data:"), "These show cell death (percentage) over time in hours in two cell lines (CONTROL & CASP4). There is increasing cell death in CONTROL cells over time, but not CASP4 cells. The cells were infected with a pathogen, which leads to cell death, and experiments repeated independently 5 times, as shown in Exp_no column. Technical replicates within each experiment were averaged, so these data represent independent biological replicates of complete block designs with two factors (miRNA & Time). Time_h_num is a numeric column and used for different plots and will produce different analysis results as compared to Time_h, which is categorical (although both are similar values, just entered in different formats)."), 
+        tags$li(tags$strong("Suggested example option 1:")," Box 1: miRNA, Box 2: Cell_death_percent; Box 3: No, Box 4 (on Graphs tab): Time_h; Box 5: either set as No or choose Exp_no."),
+        tags$li(tags$strong("Suggested example option 2:"), " Box 1: Time_h, Box 2: Cell_death_percent; Box 3: Yes, Box 3.1: miRNA; Box 4 (on Graphs tab): No; Box 5: No."),
+        tags$li(tags$strong("Suggested example option 3:"), " Box 1: Time_h_num (for a numeric XY plot), Box 2: Cell_death_percent; Box 3: Yes, Box 3.1: miRNA; Box 4 (on Graphs tab): No; Box 5: No."),
+      tags$li("Remember to click 'Variables chosen' and 'grafify my data' after picking/changing variables and graph types, respectively."),
+      tags$li("See futher instructions on the Graphs and ANOVAs tabs for continuing with the above options 1-3 with example data.")
     )
   )))
 })
@@ -98,7 +103,9 @@ output$graphsHelpOpen <- renderText({ #in use on Graphs landing
         "For linear model fitting, go to the 'ANOVAs (linear models) and Comparisons' tab and choose options in ",
         tags$strong("Boxes 9-10"),
         "."
-      )
+      ),
+     tags$li( #PBrvw
+       tags$strong("Suggested example:"), "with option 1, in addition to Boxplot/Bar graph/Violin plot/Point & errorbar you can choose Before-after plot. Or change Box 5 to No and see data distributions (Density/Histogram); with option 2, you can produce 2-way ANOVA type plots; with option 3, you will see Numeric XY plots on which you can add linear or loess averages in Box 7.1. Use options in Box 8, and then clicking 'grafify my data'.")
     )
   )))
 })
@@ -142,7 +149,9 @@ output$ANOVAsHelpOpen <- renderText({ #in use on ANOVA landing
       tags$li(
         "The 'Linear Model' tab below shows the model summary, including the 'formula', which shows fixed and random variables, log-transformation etc, if used."),
     tags$li(
-      "The 'Data used for analyses' tab shows the variables used for the graph and analyses.")
+      "The 'Data used for analyses' tab shows the variables used for the graph and analyses."),
+    tags$li( #PBrvw
+      tags$strong("Suggested example:"), "Proceed for ANOVA only when using examples 2 or 3; with example 1, the analysis of this data will be incorrect as we did not use a grouping factor in Box 3 on the Data & Variables tab (Faceting variable(s) in Box 4 are not used in analysis - they only alter the graph). Choose Simple or Mixed effects analysis and click 'Analyse my data'. If using Mixed models, in Box 9.1 use Exp_no, which is the blocking/random factor in this dataset. There are no technical replicates, so both options in Box 9.2 will produce similar results. Use Levelwise 1 or Levelwise 2 for post-hoc comparisons.")
       )
   )))
 })
@@ -258,7 +267,7 @@ output$contrasts_head <- renderText({ #in use in ANOVA tab
              "Post-hoc comparisons",
              "</h3>",
              "<h6>",
-             "Note: the ratio is on the original scale.",
+             "Note: the ratio is on the original scale (i.e., back-transformation from log-scale).",
              "</h4>",
              "<h6>",
              "P values are FDR adjusted. Kenward-Roger method for degrees of freedom.",
@@ -289,7 +298,7 @@ output$Instr_Data <- renderText({ #in use in Instructions Data tab
       tags$li(
           "If you would like to use example data, click", tags$strong("Start"), " directly and proceed to choosing variables."
         ),
-      tags$li(tags$strong("Important: column names should not have space between words. Please use an `_` (underscore) instead. You may have to edit the name later when you prepare figures in Powerpoint or other software you use."))),
+      tags$li(tags$strong("Important: column names should not have space between words or begin with a number or `.` (dot). Please use an `_` (underscore) instead. Special characters (e.g., +, -, $, parentheses) will be automatically replaced with `_` to avoid errors."))),
       tags$li(
         "Your data should be in long format. If you are not familiar with long-format tables, see the image below for an example of a long-format table."
       ),
@@ -628,7 +637,7 @@ output$Instr_ANOVA <- renderText({ #in use
               tags$ul(tags$li("Technical replicates are indicated in the variable ", tags$strong("Tech_Rep_num"), ", e.g., Expt1 has data for 'Cell_viability_percent' from TechRep1 and TechRep2."), 
                       tags$li(tags$strong("These kinds of technical replicates are not statistically independent,  and using them in the data table could lead to pseudoreplication.")))
             )),
-            tags$li("To avoid pseudoreplication, the `grafify` default is to ", tags$strong("average replicates within levels of the Random factor chosen in Box 9.1 grouped by Fixed factors selected in Boxes 1-3 before fitting a random intercepts mixed effects model.")), 
+            tags$li("To avoid pseudoreplication, the `grafify` default is to ", tags$strong("average replicates within levels of the Random factor chosen in Box 9.1 grouped by Fixed factors selected in Boxes 1-3 before fitting a random intercepts mixed effects model. There is no option of averaging replicates for 'Simple' model, so you must do this before uploading data otherwise results will be incorrect.")), 
             tags$li("The averaging of technical replicates ensures that pseudoreplication, which poses an analysis risk is avoided. Within experiment variability, i.e., varibility in technical replicates, should not affect the overall outcome of the test. Overall, therefore, the quality of technical replicates matters more than their quantity."),
             tags$li("If you do have technical replicates in your data table as above, the ", tags$strong("Random factor chosen in Box 9.1"), "should be ", tags$strong("Experiment_num"), ". Choosing 'Technical_rep_num' as Random variable will  give the wrong result."),
             tags$li("Ideally, you should average technical replicates and only use means from independent experiments in the data set uploaded to `grafify`."),
@@ -684,13 +693,14 @@ output$Instr_FAQs <- renderText({ #in use
     tags$br(),
     tags$h5("Tips to avoid errors:"),
     tags$ol(
-      tags$li(
-        "Ensure that the data is correctly formatted with no spaces in column names (instead use an underscore '_' to separate words). Some special characters, such as Greek letters, may also cause errors."),
-      tags$li(
-        "If there is an error, reload the app (reload/refresh the page). Repeatedly chaning variables and performing analyes may also lead to errors. Analyses errors may be due to missing values in data table"),
-      tags$li(
-        "Analyses does not produce ANOVA tables or graphs: this may be because you did not first plot a graph of the data in the Graphs tab."),
-      tags$li("Two-way analysis failed: is your grouping variable (Box 3.1) entered as numbers in the data table (e.g., Time in min or years or other units), even though you meant to use these as categorical groups? Enter them as alphanumeric values (e.g., 10min, 20min; y20204, y2025 and so on) so that the app does not assume it to be numeric.")
+      tags$li(tags$strong("Data upload error: "),
+        "Ensure that the data is correctly formatted with no spaces in column names (instead use an underscore '_' to separate words). Some special characters, such as Greek letters, may also cause errors. There is also a limit of up to 20 columns and 20k rows of data."),
+      tags$li(tags$strong("App disconnected/stopped: "),
+        "If there is an error, reload the app (reload/refresh the page). Repeatedly changing variables and performing analyes may also lead to errors. Analyses errors may be due to missing values in data table"),
+      tags$li(tags$strong("No graph or ANOVA result: "),
+        "This may be because you did not first plot a graph of the data in the Graphs tab. Ensure you click the required 'action buttons', like 'Variables chosen', 'grafify my data', 'Analyse my data', in that order."),
+      tags$li(tags$strong("Two-way ANOVA analysis failed: "),
+        "Is your grouping variable (Box 3.1) entered as numbers in the data table (e.g., Time in min or years or other units), even though you meant to use these as categorical groups? Enter them as alphanumeric values (e.g., 10min, 20min; y20204, y2025 and so on) so that the app does not assume it to be numeric.")
     ))
     
   ))

@@ -7,6 +7,7 @@ plotOutput("plotChosenGraph", #graph output
 #tags$br(),
 #sidebar = sidebar()),
 fluidRow(
+  column(10),
   column(3, #PDF height
          numericInput(
            "g_ht",
@@ -25,12 +26,12 @@ fluidRow(
   )),
   #tags$br(),
   #column so that next button is not on the same line and less wide
-  column(10),
+  #column(10),
   column(
-    3,
+    2,
     downloadBttn(
       "SaveGraph",
-      size = "sm",
+      size = "md",
       #download button
       label = "Save as PDF",
       color = "royal",
@@ -40,7 +41,7 @@ fluidRow(
     )
   ),
   column(
-    6,
+    3,
     actionButton(
       "PDFSizeHelper",
       #Posthoc comparisons help button
@@ -49,5 +50,36 @@ fluidRow(
       class = "btn-info",
       style = "unite"
     ),
-  )
-))
+  ),
+  column(10),
+  column(12, #PB rvw code for graph
+         card(
+         actionLink(
+           "copy_code",
+           label = bs_icon("clipboard"),
+           style = "
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 18px;
+    opacity: 0.6;
+  ",
+           onmouseover = "this.style.opacity=1;",
+           onmouseout = "this.style.opacity=0.6;"
+         ),
+         tooltip(
+           actionLink(
+             "copy_code",
+             label = bs_icon("clipboard"),
+             style = "
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 18px;
+    "
+           ),
+           "This is the basic grafify R code for the graph. Replace data with your data table. Press to copy code."
+         ),
+         verbatimTextOutput("grafify_code")))
+)
+)

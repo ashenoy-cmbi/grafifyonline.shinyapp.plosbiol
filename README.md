@@ -26,7 +26,7 @@ As is required for Shiny apps, the code is placed in `source` directory, and oth
 
 #### Source files in `ui`
 
-There are 11 files that code the `ui`, with the sublists indicating sections within those source files. Most of these are sourced in `app.R`, or in other src files. 
+There are 12 files that code the `ui`, with the sub-lists indicating sections within those source files. Most of these are sourced in `app.R`, or in other src files. 
 
 01.  src01e_menu_links.R
      - link_shenoy
@@ -57,10 +57,13 @@ There are 11 files that code the `ui`, with the sublists indicating sections wit
    
 11.  src02_headers_help.R
      - output$ for help text on all tabs #no lists or sources 
+
+12.  src01g_Help_n_Images.R
+     - landing page bullet list of information
   
 #### Source files in `server`
 
-There are 27 files that code the `server`, with the sublists indicating sections (and reactives) within those source files. There are ~ 16 reactives in `app.R`, and others are spread across `server` sections.
+There are 27 files that code the `server`, with the sublists indicating sections (and reactives) within those source files. There are ~ 20 reactives in `app.R`, and others are spread across `server` sections.
 
 01. src01e_GraphTypeChoices.R # ~10 EventReactives
 02. src01f_Optional_GraphSettings.R # ~22 output$
@@ -90,4 +93,5 @@ There are 27 files that code the `server`, with the sublists indicating sections
 25. src13_numericXYplot_n_save.R
 26. src14_DensityHistogram_plot_n_save.R 
     - 27. src14b2_plot_density_histo.R # plot_density reactive
+28. src01i_graf_call_helper.R
 

@@ -80,11 +80,11 @@ AvgRFPlotSingCol <- eventReactive(input$analyseData, {
      CatGp() == TRUE){singColnum <- CatGplevels()}
   if(input$addVarsOpt == "No" & 
      Xnum() == FALSE) {singColnum <- Xlevels()}
-  ifelse (input$colPick == "No" ,
-          p <- p,
+  if (input$colPick == "No"){
+          p <- p} else { #PBrvw ifelse handling
           p <- p +
-            scale_fill_manual(values = rep(input$colPick2, 
-                                           times = singColnum)))
+            scale_fill_manual(values = rep(as.character(input$colPick2), 
+                                           times = singColnum))}
   p
 })
 

@@ -11,7 +11,18 @@ Panel_Anova <- list(
         tags$br()
       )
     ),  tags$br(), 
-  ),column(12, card(tags$br(), 
+  ),column(12, card(card_header(
+    div(class = "d-flex flex-column", #PBrvw
+        tags$h5("Linear models for ANOVA"),
+        tags$h6("Choose options, and click 'Analyse my data' to proceed. Diagnostic plots, ANOVA table, estimated marginal means and comparisons will appear below.", 
+                class = "text-muted mt-1")),
+    class = "d-flex justify-content-between",
+    tooltip(
+      bs_icon("info-circle"),
+      "Please select Yes (and then a variable) or No and then press 'Variables chosen' before proceeding."
+    )
+  ),
+    tags$br(), 
     fluidRow(
       column(
         4,

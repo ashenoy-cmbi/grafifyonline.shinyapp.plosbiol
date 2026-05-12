@@ -65,20 +65,30 @@ output$GpforRelevel <- renderText({
   observe(input$addVarsOpt)
   if(input$addVarsOpt == "No"){
     txt <- paste("No Grouping variable is selected.", sep = "")
-  }
-  if (input$addVarsOpt == "Yes" & 
-      CatGp() == FALSE) {
+  } else if (Xnum() && !CatGp()) {  # PBrvw logic updated
     tx <- "numeric"
     #if numeric txt output for logical
     txt <- paste("The Grouping variable is ", tx, ".", sep = "")
-  }
-  #if not txt output for logical
-  if (input$addVarsOpt == "Yes" & 
-      CatGp() == TRUE) {
-    tx <- "categorical"
-    txt <- paste("The Grouping variable is ", tx, ". You can reorder groups.", sep =
-                   "")
-  }
+  } else if (!Xnum() && !CatGp()) {
+    tx <- "numeric"
+    #if categorical txt output for logical
+    txt <- paste("The X-axis variable is categorical and the grouping variable is ", tx, ". You can reorder groups.", sep = "")
+  } else {txt <- paste("The Grouping variable is categorical. You can reorder groups.", sep =
+                         "")}
+  
+#  #if not txt output for logical
+#  if (input$addVarsOpt == "Yes" & 
+#      Xnum() == FALSE & 
+#      CatGp() == TRUE) {
+#    tx <- "categorical"
+#    txt <- paste("The Grouping variable is ", tx, ". You can #reorder groups.", sep =
+#                   "")
+#  }
+#  if (!Xnum() && !CatGp()) {
+#    tx <- "categorical"
+#    txt <- paste("The X-axis and Grouping variables are ", tx, #". You can reorder groups.", sep =
+#                   "")
+#  }
   txt
 })
 
@@ -158,15 +168,38 @@ selVarsReLevel <- eventReactive(input$varsDone, {
 #reorder Gp variables from vars4
 selVarsReLevelGp <- eventReactive(input$varsDone, {
   #get names of groups if categorical Grouping variable
-  #observe(input$addVarsOpt)
+  #observe(input$addVarsOpt) #PBrvw
   req(file1())
+  varList <- NULL
   observe(input$addVarsOpt)
-  if (input$addVarsOpt == "Yes" & 
-      CatGp() == TRUE)
-    varList <- unique(file1()[[input$varsFour]])  #should be this format
-  if (input$addVarsOpt == "Yes" & 
-      CatGp() != TRUE)
-    varList <- NULL
+  if(input$addVarsOpt == "Yes"){
+    if (CatGp() || !Xnum()) {
+      varList <- unique(file1()[[input$varsFour]])
+    } else {
+      varList <- NULL
+    }
+  }
+  
+#  if (input$addVarsOpt == "Yes" & 
+#      Xnum() != TRUE &
+#      CatGp() == TRUE)
+#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
+#  if (input$addVarsOpt == "Yes" & 
+#      Xnum() == TRUE & # PBrvw
+#      CatGp() != TRUE)
+#    varList <- NULL
+#  ### PBrvw
+#  if (input$addVarsOpt == "Yes" & 
+#      Xnum() == TRUE & # PBrvw
+#      CatGp() == TRUE)
+#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
+#  
+#  if (input$addVarsOpt == "Yes" & 
+#      Xnum() != TRUE & 
+#      CatGp() == TRUE)
+#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
+#  ###
+#
   if (input$addVarsOpt == "No")
     varList <- NULL
   #optional UI for groups

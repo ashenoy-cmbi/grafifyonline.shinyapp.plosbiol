@@ -4,11 +4,43 @@
 avgFileSimple <- eventReactive(input$analyseData, {
   req(input$MorS == "Simple")
   req(input$addVarsOpt)
-  
-  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
-  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
-  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
-  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
+  #### PBrvs
+  if (input$addVarsOpt == "No") {
+    
+    # ---- no grouping (1-way design)
+    df <- RelevelFile1.1()
+    
+  } else {
+    
+    # ---- grouping is present ----
+    
+    if (Xnum() == TRUE && CatGp() == FALSE) {
+      
+      # numeric X + numeric grouping
+      df <- file1()
+      
+    } else if (Xnum() == TRUE && CatGp() == TRUE) {
+      
+      # numeric X + categorical grouping
+      df <- RelevelFile1.2()
+      
+    } else if (Xnum() == FALSE) {
+      
+      # categorical X + grouping (ANY type)
+      # includes BOTH:
+      #     - categorical grouping
+      #     - numeric grouping (your new case)
+      df <- RelevelFile1()
+      
+    }
+    
+  }
+  ####
+#  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
+#  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
+#  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
+#  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
+#  if (Xnum() == FALSE & CatGp() == FALSE) { df <- RelevelFile1()} #PBrvw to add for X-categorical and numeric CatGp
   
   df  # no averaging needed
 })
@@ -18,11 +50,43 @@ avgFileMixed <- eventReactive(input$analyseData, {
   req(input$MorS == "Mixed")
   req(input$addVarsOpt)
   req(input$AvgRF)
-  
-  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
-  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
-  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
-  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
+  #### PBrvs
+  if (input$addVarsOpt == "No") {
+    
+    # ---- no grouping (1-way design)
+    df <- RelevelFile1.1()
+    
+  } else {
+    
+    # ---- grouping is present ----
+    
+    if (Xnum() == TRUE && CatGp() == FALSE) {
+      
+      # numeric X + numeric grouping
+      df <- file1()
+      
+    } else if (Xnum() == TRUE && CatGp() == TRUE) {
+      
+      # numeric X + categorical grouping
+      df <- RelevelFile1.2()
+      
+    } else if (Xnum() == FALSE) {
+      
+      # categorical X + grouping (ANY type)
+      # includes BOTH:
+      #     - categorical grouping
+      #     - numeric grouping (your new case)
+      df <- RelevelFile1()
+      
+    }
+    
+  }
+  ####
+#  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
+#  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
+#  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
+#  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
+#  if (Xnum() == FALSE & CatGp() == FALSE) {df <- RelevelFile1() } #PBrvw to add for X-categorical and numeric CatGp
   
   ns <- colnames(df)
   x1 <- ns[ns == input$varsOne]
@@ -211,11 +275,11 @@ RandFplotreact <- eventReactive(input$analyseData, {
      CatGp() == TRUE){singColnum <- CatGplevels()}
   if(input$addVarsOpt == "No" & 
      Xnum() == FALSE) {singColnum <- Xlevels()}
-  ifelse (input$colPick == "No" ,
-          p <- p,
+  if (input$colPick == "No"){
+          p <- p} else { #PBrvw ifelse handling
           p <- p +
-            scale_fill_manual(values = rep(input$colPick2, 
-                                           times = singColnum)))
+            scale_fill_manual(values = rep(as.character(input$colPick2),
+                                           times = singColnum))}
   #add random factor as the facet
   if(input$MorS == "Mixed"){
   p <- p + facet_wrap(vars(!!input$varsSix))+
@@ -249,9 +313,9 @@ avg_RandFplotreact <- eventReactive(input$analyseData, {
 })
 #UI output of avg plot
 output$avgRandFplot <- renderPlot({
-  if (input$MorS == "Mixed" && input$AvgRF == "Yes") {
+  if (input$MorS == "Mixed" & input$AvgRF == "Yes") {
     p <- avg_RandFplotreact()} 
-  if (input$MorS == "Mixed" && input$AvgRF == "No") {
+  if (input$MorS == "Mixed" & input$AvgRF == "No") {
     p <- avg_RandFplotreact()} 
   if (input$MorS == "Simple") {
     p <- NULL} 
@@ -321,7 +385,7 @@ output$newAvgRF_msg <- renderText({
     if (input$AvgRF == "Yes") {
       return("A mixed-effects model will be fit. If there are replicate values within levels of the Random Factor grouped by Fixed Factor(s) chosen in Boxes 2 and/or 3, those will be averaged and their means used to fit a random intercepts model. Choose 'No' in Box 9.2 to plot all values without averaging.")
     } else if (input$AvgRF == "No") {
-      return("A mixed-effects model will be fit. All values within all levels of the Random Factor, grouped by Fixed Factor(s) chosen in Boxes 2 and/or 3, will be used to fit a random intercepts model. Choose 'Yes' in Box 9.2 to average them.")
+        return("A mixed-effects model will be fit. All values within all levels of the Random Factor, grouped by Fixed Factor(s) chosen in Boxes 2 and/or 3, will be used to fit a random intercepts model. Choose 'Yes' in Box 9.2 to average them.")
     } else {
       return("Choose whether to average replicates within the Random Factor.")
     }
