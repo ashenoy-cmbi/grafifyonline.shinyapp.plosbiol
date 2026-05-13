@@ -2,7 +2,6 @@
 #this is used in facet_grid() in PlotSingCol in app.R
 FacVars <- eventReactive(input$varsDone, {
   #start when varsDone is clicked
-  observe(input$facetingOpt)
   #null starting vector
   lfvars <- NULL
   #did user select 1 or more faceting var?
@@ -60,9 +59,8 @@ output$XforRelevel <- renderText({
 
 ######## always on Grouping relevel
 #output on src01PanelGraphs_card6_7
-output$GpforRelevel <- renderText({       
+output$GpforRelevel <- renderText({
   #get X-axis type from Xnum() reactive
-  observe(input$addVarsOpt)
   if(input$addVarsOpt == "No"){
     txt <- paste("No Grouping variable is selected.", sep = "")
   } else if (Xnum() && !CatGp()) {  # PBrvw logic updated
@@ -171,7 +169,6 @@ selVarsReLevelGp <- eventReactive(input$varsDone, {
   #observe(input$addVarsOpt) #PBrvw
   req(file1())
   varList <- NULL
-  observe(input$addVarsOpt)
   if(input$addVarsOpt == "Yes"){
     if (CatGp() || !Xnum()) {
       varList <- unique(file1()[[input$varsFour]])
@@ -244,9 +241,6 @@ Ynum <- eventReactive(input$varsDone, {
 CatGp <- eventReactive(input$varsDone, {
   req(file1())
   f <- file1()
-  observe({
-    input$addVarsOpt
-  })
   if (input$addVarsOpt == "No")
     ctgp <- 0
   if (input$addVarsOpt == "Yes")
@@ -260,9 +254,6 @@ CatGp <- eventReactive(input$varsDone, {
 ShapeLevs <- eventReactive(input$varsDone, {
   req(file1())
   f <- file1()
-  observe({
-    input$ShapesOpt
-  })
   if (input$ShapesOpt == "No")
     shplv <- 0
   if (input$ShapesOpt == "Yes")
@@ -284,7 +275,6 @@ output$OutYnum <- renderText({
 #UI output for type of Shapes variables (production)
 #output in src01ePanelGraphs_card6_7
 output$ShapeLevs <- renderText({
-  observe(input$varsDone)
   if (ShapeLevs() >= 25)
     txt <- paste(
       "Your Shapes variable has ",
