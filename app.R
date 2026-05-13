@@ -44,6 +44,46 @@ last_updated <- format(file.info(app_path)$mtime, "%d %B %Y, %H:%M") #copilot co
 #has to be after last_updated as it is called in this file
 source("./source/src01e_landing_page_bulletlist.R", local = TRUE) #For landing page bullet list PBrvw
 
+# Per-session source files used inside server(). Parse once at app startup
+# instead of re-parsing on every new connection. eval() inside server() binds
+# the reactives to the per-session input/output/session as before.
+srvr_src_files <- c(
+  "./source/src01e_GraphTypeChoices.R",
+  "./source/src01f_Optional_GraphSettings.R",
+  "./source/src02_headers_help.R",
+  "./source/src03b_emmeans.R",
+  "./source/src03d_anova_n_residuals_SimpMixed_B.R",
+  "./source/src04_boxplot_n_save.R",
+  "./source/src05_barplot_n_save.R",
+  "./source/src05b_pointSD_plot_n_save.R",
+  "./source/src06_matchplot_n_save.R",
+  "./source/src08_violinplot_n_save.R",
+  "./source/src09_befafterplot_n_save.R",
+  "./source/src10a_3dviolinplot_n_save.R",
+  "./source/src10b_3dboxplot_n_save.R",
+  "./source/src10c_3dbarplot_n_save.R",
+  "./source/src10d_3dpointSDplot_n_save.R",
+  "./source/src11a_4dBoxplot_n_save.R",
+  "./source/src11b_4dShapesBoxplot_n_save.R",
+  "./source/src11c_4dBarplot_n_save.R",
+  "./source/src11d_4dShapesBarplot_n_save.R",
+  "./source/src11e_4dViolinplot_n_save.R",
+  "./source/src11f_4dShapesViolinplot_n_save.R",
+  "./source/src11g_4dPointplot_n_save.R",
+  "./source/src11h_4dShapesPointpoint_n_save.R",
+  "./source/src14_DensityHistogram_plot_n_save.R",
+  "./source/src12_tooltips.R",
+  "./source/src13_numericXYplot_n_save.R",
+  "./source/src01i_graf_call_helper.R"
+)
+srvr_src_exprs <- setNames(
+  lapply(srvr_src_files, function(f) parse(file = f, keep.source = FALSE)),
+  srvr_src_files
+)
+load_srv <- function(path) {
+  eval(srvr_src_exprs[[path]], envir = parent.frame())
+}
+
 # Define UI for application that draws a histogram
 ui <- bslib::page_navbar(
   #ga G-059EWJ6910 for shiny.io
@@ -425,9 +465,7 @@ server <- function(input, output, session) {
   outputOptions(output, "started", suspendWhenHidden = FALSE)
   
   #source file with updated choices of graphs based on variable types
-  source("./source/src01e_GraphTypeChoices.R",
-         local = TRUE,
-         echo = TRUE)
+  load_srv("./source/src01e_GraphTypeChoices.R")
   
   #update default colour palettes if numeric XY2 graph
   observe({
@@ -730,82 +768,38 @@ server <- function(input, output, session) {
   })
   
   #source options for point_sd, errorbars, single colour
-  source("./source/src01f_Optional_GraphSettings.R", local = TRUE)
+  load_srv("./source/src01f_Optional_GraphSettings.R")
   #source help for tab panels & instructions menu option
-  source("./source/src02_headers_help.R", local = TRUE, echo = TRUE)
+  load_srv("./source/src02_headers_help.R")
   #source of emmeans calls
-  source("./source/src03b_emmeans.R", local = TRUE, echo = TRUE)
+  load_srv("./source/src03b_emmeans.R")
   #source of ANOVA and Residuals plots calls
-  source("./source/src03d_anova_n_residuals_SimpMixed_B.R",
-         local = TRUE,
-         echo = TRUE)
+  load_srv("./source/src03d_anova_n_residuals_SimpMixed_B.R")
   #source graph types without/with shapes & faceting
-  source("./source/src04_boxplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src05_barplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src05b_pointSD_plot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src06_matchplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src08_violinplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src09_befafterplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src10a_3dviolinplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src10b_3dboxplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src10c_3dbarplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src10d_3dpointSDplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11a_4dBoxplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11b_4dShapesBoxplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11c_4dBarplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11d_4dShapesBarplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11e_4dViolinplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11f_4dShapesViolinplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11g_4dPointplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src11h_4dShapesPointpoint_n_save.R",
-         local = TRUE,
-         echo = TRUE)
+  load_srv("./source/src04_boxplot_n_save.R")
+  load_srv("./source/src05_barplot_n_save.R")
+  load_srv("./source/src05b_pointSD_plot_n_save.R")
+  load_srv("./source/src06_matchplot_n_save.R")
+  load_srv("./source/src08_violinplot_n_save.R")
+  load_srv("./source/src09_befafterplot_n_save.R")
+  load_srv("./source/src10a_3dviolinplot_n_save.R")
+  load_srv("./source/src10b_3dboxplot_n_save.R")
+  load_srv("./source/src10c_3dbarplot_n_save.R")
+  load_srv("./source/src10d_3dpointSDplot_n_save.R")
+  load_srv("./source/src11a_4dBoxplot_n_save.R")
+  load_srv("./source/src11b_4dShapesBoxplot_n_save.R")
+  load_srv("./source/src11c_4dBarplot_n_save.R")
+  load_srv("./source/src11d_4dShapesBarplot_n_save.R")
+  load_srv("./source/src11e_4dViolinplot_n_save.R")
+  load_srv("./source/src11f_4dShapesViolinplot_n_save.R")
+  load_srv("./source/src11g_4dPointplot_n_save.R")
+  load_srv("./source/src11h_4dShapesPointpoint_n_save.R")
   #plot func is in src14b_plot_density_histo
-  source("./source/src14_DensityHistogram_plot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
-  
+  load_srv("./source/src14_DensityHistogram_plot_n_save.R")
+
   #source with tooltips for i icons
-  source("./source/src12_tooltips.R", 
-         local = TRUE,
-         echo = TRUE)
-  source("./source/src13_numericXYplot_n_save.R",
-         local = TRUE,
-         echo = TRUE)
+  load_srv("./source/src12_tooltips.R")
+  load_srv("./source/src13_numericXYplot_n_save.R")
   
   #main reactive with conditions for which graph to plot
   whichplotChosenGraph <- eventReactive(input$makegraph, {
@@ -944,9 +938,7 @@ server <- function(input, output, session) {
   ### 08052026 PBrvw
   # no ifelse()
   # better handling of rep()
-  source("./source/src01i_graf_call_helper.R",
-         local = TRUE,
-         echo = TRUE)
+  load_srv("./source/src01i_graf_call_helper.R")
   
   PlotSingCol <- eventReactive(input$makegraph, {
     
