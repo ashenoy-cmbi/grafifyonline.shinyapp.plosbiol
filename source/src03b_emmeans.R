@@ -2,7 +2,6 @@
 
 #get variables as a or a*b for lmer and emmeans specs
 dep <- reactive({
-  observe({c(input$logTransX, input$addVarsOpt)})
   #initiate NULL vectors
   g4 <- NULL
   dep1 <- NULL
@@ -35,7 +34,6 @@ output$depReactive <- renderText({ paste(as.formula(formula(decideModel()))) })
 #series of reactives to make emmeans formula
 #reactive for emmeans specs Pairs
 emmPairs <- reactive({
-  observe(c(input$emm_type))
   emmDep <- dep()
   if(input$emm_type == "Pairwise")
     fml <- as.formula(paste("pairwise", "~", emmDep)) 
@@ -44,8 +42,7 @@ emmPairs <- reactive({
 output$emmPairFML <- renderText({ paste(emmFml()) })
 #reactive for emmeans specs Levelwise1
 emmLev1 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Levelwise 1" & 
+  if(input$emm_type == "Levelwise 1" &
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsOne, input$varsFour, 
                     sep = "|")
@@ -54,8 +51,7 @@ emmLev1 <- reactive({
 })
 #reactive for emmeans specs Levelwise2
 emmLev2 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Levelwise 2" & 
+  if(input$emm_type == "Levelwise 2" &
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsFour, input$varsOne, 
                     sep = "|")
@@ -65,8 +61,7 @@ emmLev2 <- reactive({
 
 #### start - 2way trt.vs.ctrl contrasts 02/10/2025
 emm2wLev1 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Compare to reference - 2way 1" & 
+  if(input$emm_type == "Compare to reference - 2way 1" &
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsOne, input$varsFour, 
                     sep = "|")
@@ -75,8 +70,7 @@ emm2wLev1 <- reactive({
 })
 #reactive for emmeans specs Levelwise2
 emm2wLev2 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Compare to reference - 2way 2" & 
+  if(input$emm_type == "Compare to reference - 2way 2" &
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsFour, input$varsOne, 
                     sep = "|")
@@ -88,8 +82,7 @@ emm2wLev2 <- reactive({
 
 #reactive for emmeans specs trt.vs.ctrl
 emmRef <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Compare to reference" & 
+  if(input$emm_type == "Compare to reference" &
      input$addVarsOpt == "No"){
     emmDep <- paste(input$varsOne)
   fml <- as.formula(sprintf('%s ~ %s', 
@@ -97,7 +90,6 @@ emmRef <- reactive({
 })
 #UI output SelectInput for Ref level with trt.vs.ctrl
 output$emmRefType <- renderUI({
-  observe({input$emm_type})
   if(input$emm_type %in% c("Compare to reference",
                          "Compare to reference - 2way 1",
                          "Compare to reference - 2way 2")){
@@ -115,7 +107,6 @@ output$emmRefType <- renderUI({
 #reactive for emmeans fml of all types 
 emmFml <- reactive({
   #formula output based on choice of comparison
-  observe(input$emm_type) 
   if(input$emm_type == "Pairwise") fml <- emmPairs()
   if(input$emm_type == "Levelwise 1") fml <- emmLev1()
   if(input$emm_type == "Levelwise 2") fml <- emmLev2()
@@ -153,7 +144,6 @@ output$Comp1 <- render_gt({
   t2 <- as.data.frame(t1[[1]])  #extract $emmeans from emmeans output
   n <- length(colnames(t2))  #get dim of table
   #colnames(t2)[1] <- colnames(file4)[colnames(file4)==input$varsOne]
-  observe(input$addVarsOpt)  #variable width for 1w or 2w ANOVA
   if(input$addVarsOpt == "Yes") from = 3
   if(input$addVarsOpt == "No") from = 2
   gt::gt(data = t2)  %>% 
@@ -177,8 +167,7 @@ output$Comp2 <- render_gt({
   t3 <- Comp1()
   t4 <- as.data.frame(t3[[2]])  #extract $contrasts from emmeans output
   n <- length(colnames(t4))  #get dim of table
-  observe(input$addVarsOpt)  #get column values for DT formatting
-  if(input$addVarsOpt == "Yes" & 
+  if(input$addVarsOpt == "Yes" &
      input$emm_type != "Pairwise") from = 3
   if(input$addVarsOpt == "No") from = 2
   if(input$addVarsOpt == "Yes" & 
