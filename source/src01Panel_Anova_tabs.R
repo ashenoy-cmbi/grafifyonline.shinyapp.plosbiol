@@ -22,40 +22,40 @@ Panel_Anova <- list(
       "Please select Yes (and then a variable) or No and then press 'Variables chosen' before proceeding."
     )
   ),
-    tags$br(), 
-    fluidRow(
-      column(
-        4,
-        htmlOutput("outnewMorS"),       #from src03d_anova_n_residuals_SimpMixed
-      ),
-      column(4, htmlOutput("varsel6")), #app.R    
-      column(4, 
-             htmlOutput("outnewAvgRF"), #from src03d_anova_n_residuals_SimpMixed
-             ),
-      #Random factor choice varsSix
-      #empty columns for formatting
-      #column(12),
-      #column(6),
-      column(6,                         #from src03d_anova_n_residuals_SimpMixed
-             htmlOutput("newAvgRF_msg"),
-      ),
-      column(12),
-      column(12),
-      tags$br(),
-      column(
-        3,
-        #card(card_header(tags$h6("Click to analyse data")),
-        actionBttn(
-          inputId = "analyseData",
-          #ANOVA action button
-          label = tags$strong("Analyse my data"),
-          size = "sm",
-          color = "royal",
-          style = "unite",
-          icon = bs_icon("power")
-        )
+  tags$br(), 
+  fluidRow(
+    column(
+      4,
+      htmlOutput("outnewMorS"),       #from src03d_anova_n_residuals_SimpMixed
+    ),
+    column(4, htmlOutput("varsel6")), #app.R    
+    column(4, 
+           htmlOutput("outnewAvgRF"), #from src03d_anova_n_residuals_SimpMixed
+    ),
+    #Random factor choice varsSix
+    #empty columns for formatting
+    #column(12),
+    #column(6),
+    column(6,                         #from src03d_anova_n_residuals_SimpMixed
+           htmlOutput("newAvgRF_msg"),
+    ),
+    column(12),
+    column(12),
+    tags$br(),
+    column(
+      3,
+      #card(card_header(tags$h6("Click to analyse data")),
+      actionBttn(
+        inputId = "analyseData",
+        #ANOVA action button
+        label = tags$strong("Analyse my data"),
+        size = "sm",
+        color = "royal",
+        style = "unite",
+        icon = bs_icon("power")
       )
     )
+  )
   ))),
   tabsetPanel(
     tags$br(),
@@ -65,57 +65,57 @@ Panel_Anova <- list(
       value = 2,
       #tags$br(),
       mainPanel(width = 12,
-  fluidRow(
-    column(10, card(
-      card_header(
-        "Residuals plots",
-        #Residuals plots card
-        tooltip(
-          bs_icon("info-circle"),
-          "These are plots of residuals of your linear model. If residuals are very skewed away from the line in QQ plot or far from 0 in the Density plot, it is likely that there is a major deviation from normal distribution. Therefore, the linear model may be a poor fit for your data. Proceed with caution and consider using data-transformations (e.g., log-data)."
-        )
-      ),
-      #htmlOutput("qq_head"),
-      fluidRow(
-        column(5, plotOutput(
-          "ModPlot", #QQ plot from src03d_anova_n_residuals_SimpMixed
-          width = "25vw", height = "25vw"
-        )),
-        column(5, plotOutput(
-          "ModPlotDist", #Density plot from src03d_anova_n_residuals_SimpMixed
-          width = "25vw", height = "25vw"
-        ))
-      )) #new end to QQ & Density plots
-    ))
+                fluidRow(
+                  column(10, card(
+                    card_header(
+                      "Residuals plots",
+                      #Residuals plots card
+                      tooltip(
+                        bs_icon("info-circle"),
+                        "These are plots of residuals of your linear model. If residuals are very skewed away from the line in QQ plot or far from 0 in the Density plot, it is likely that there is a major deviation from normal distribution. Therefore, the linear model may be a poor fit for your data. Proceed with caution and consider using data-transformations (e.g., log-data)."
+                      )
+                    ),
+                    #htmlOutput("qq_head"),
+                    fluidRow(
+                      column(5, plotOutput(
+                        "ModPlot", #QQ plot from src03d_anova_n_residuals_SimpMixed
+                        width = "25vw", height = "25vw"
+                      )),
+                      column(5, plotOutput(
+                        "ModPlotDist", #Density plot from src03d_anova_n_residuals_SimpMixed
+                        width = "25vw", height = "25vw"
+                      ))
+                    )) #new end to QQ & Density plots
+                  ))
       )), 
-  tabPanel(
-    tags$h5("Additional plots of Mixed models"),
-    width = 12,
-    value = 2,
-    #tags$br(),
-    mainPanel(width = 12,
-  fluidRow(
-    column(10, card(height = "40vw",
-      card_header(
-        "Additional plots 1 (Press 'Analyse my data' if graphs do not appear). Graphs will be faceted by levels of Random factor.",
-        tooltip(
-          bs_icon("info-circle"),
-          "Plots will appear for Mixed models only, faceted by levels within the Random factor."
-        )),
-      plotOutput("RandFplot", 
-                 height = "40vw"))),  #from src03d_anova_n_residuals_SimpMixed
-    column(10, card(
-      card_header(
-      "Additional plots 2 (Press 'Analyse my data' if graphs do not appear). Random factor will be mapped to symbol shapes or size.",
-      tooltip(
-        bs_icon("info-circle"),
-        "Plots will appear for Mixed models with levels within the Random factor mapped to shapes of data symbols, or their size (for Numeric XY graphs)."
-      )),
-      #uiOutput("RFLev_txt"),
-      plotOutput("avgRandFplot", 
-                 height = "40vw"))  #from src03d_anova_n_residuals_SimpMixed
+    tabPanel(
+      tags$h5("Additional plots of Mixed models"),
+      width = 12,
+      value = 2,
+      #tags$br(),
+      mainPanel(width = 12,
+                fluidRow(
+                  column(10, card(height = "40vw",
+                                  card_header(
+                                    "Additional plots 1 (Press 'Analyse my data' if graphs do not appear). Graphs will be faceted by levels of Random factor.",
+                                    tooltip(
+                                      bs_icon("info-circle"),
+                                      "Plots will appear for Mixed models only, faceted by levels within the Random factor."
+                                    )),
+                                  plotOutput("RandFplot", 
+                                             height = "40vw"))),  #from src03d_anova_n_residuals_SimpMixed
+                  column(10, card(
+                    card_header(
+                      "Additional plots 2 (Press 'Analyse my data' if graphs do not appear). Random factor will be mapped to symbol shapes or size.",
+                      tooltip(
+                        bs_icon("info-circle"),
+                        "Plots will appear for Mixed models with levels within the Random factor mapped to shapes of data symbols, or their size (for Numeric XY graphs)."
+                      )),
+                    #uiOutput("RFLev_txt"),
+                    plotOutput("avgRandFplot", 
+                               height = "40vw"))  #from src03d_anova_n_residuals_SimpMixed
+                  ))
       ))
-    ))
   ),
   fluidRow(
     column(
@@ -174,9 +174,7 @@ Panel_Anova <- list(
         #choose contrast type
         label = list(tags$h3("10"), "Type of comparisons"),
         choices = c("Pairwise", 
-                    "Compare to reference", 
-                    "Levelwise 1", 
-                    "Levelwise 2"),
+                    "Compare to reference"),
         selected = c("Pairwise"),
         options = list(dropdownParent = 'body'),
         multiple = FALSE

@@ -85,7 +85,7 @@ plotHistogram_react <- reactive({
   p <- do.call(plot_histogram_log, args, quote = FALSE)
   
   # Add title
-  title_text <- paste("Plot of ", input$varsOne, " vs ", input$varsTwo, " (", input$dens_count_type, ")", 
+  title_text <- paste("Plot of ", input$varsOne, " vs ", input$varsTwo, " (", input$hist_count_type, ")", 
                       sep = "")
   
   if (input$logTrans %in% c("log10", "log2")) {

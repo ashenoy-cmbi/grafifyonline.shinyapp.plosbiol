@@ -2,7 +2,7 @@
 #this is used in facet_grid() in PlotSingCol in app.R
 FacVars <- eventReactive(input$varsDone, {
   #start when varsDone is clicked
-  observe(input$facetingOpt)
+  #observe(input$facetingOpt)
   #null starting vector
   lfvars <- NULL
   #did user select 1 or more faceting var?
@@ -62,7 +62,7 @@ output$XforRelevel <- renderText({
 #output on src01PanelGraphs_card6_7
 output$GpforRelevel <- renderText({       
   #get X-axis type from Xnum() reactive
-  observe(input$addVarsOpt)
+  #observe(input$addVarsOpt)
   if(input$addVarsOpt == "No"){
     txt <- paste("No Grouping variable is selected.", sep = "")
   } else if (Xnum() && !CatGp()) {  # PBrvw logic updated
@@ -75,20 +75,6 @@ output$GpforRelevel <- renderText({
     txt <- paste("The X-axis variable is categorical and the grouping variable is ", tx, ". You can reorder groups.", sep = "")
   } else {txt <- paste("The Grouping variable is categorical. You can reorder groups.", sep =
                          "")}
-  
-#  #if not txt output for logical
-#  if (input$addVarsOpt == "Yes" & 
-#      Xnum() == FALSE & 
-#      CatGp() == TRUE) {
-#    tx <- "categorical"
-#    txt <- paste("The Grouping variable is ", tx, ". You can #reorder groups.", sep =
-#                   "")
-#  }
-#  if (!Xnum() && !CatGp()) {
-#    tx <- "categorical"
-#    txt <- paste("The X-axis and Grouping variables are ", tx, #". You can reorder groups.", sep =
-#                   "")
-#  }
   txt
 })
 
@@ -171,7 +157,7 @@ selVarsReLevelGp <- eventReactive(input$varsDone, {
   #observe(input$addVarsOpt) #PBrvw
   req(file1())
   varList <- NULL
-  observe(input$addVarsOpt)
+  #observe(input$addVarsOpt)
   if(input$addVarsOpt == "Yes"){
     if (CatGp() || !Xnum()) {
       varList <- unique(file1()[[input$varsFour]])
@@ -179,27 +165,7 @@ selVarsReLevelGp <- eventReactive(input$varsDone, {
       varList <- NULL
     }
   }
-  
-#  if (input$addVarsOpt == "Yes" & 
-#      Xnum() != TRUE &
-#      CatGp() == TRUE)
-#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
-#  if (input$addVarsOpt == "Yes" & 
-#      Xnum() == TRUE & # PBrvw
-#      CatGp() != TRUE)
-#    varList <- NULL
-#  ### PBrvw
-#  if (input$addVarsOpt == "Yes" & 
-#      Xnum() == TRUE & # PBrvw
-#      CatGp() == TRUE)
-#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
-#  
-#  if (input$addVarsOpt == "Yes" & 
-#      Xnum() != TRUE & 
-#      CatGp() == TRUE)
-#    varList <- unique(file1()[[input$varsFour]])  #should be #this format
-#  ###
-#
+
   if (input$addVarsOpt == "No")
     varList <- NULL
   #optional UI for groups
@@ -244,9 +210,7 @@ Ynum <- eventReactive(input$varsDone, {
 CatGp <- eventReactive(input$varsDone, {
   req(file1())
   f <- file1()
-  observe({
-    input$addVarsOpt
-  })
+  #observe({input$addVarsOpt})
   if (input$addVarsOpt == "No")
     ctgp <- 0
   if (input$addVarsOpt == "Yes")
@@ -284,7 +248,7 @@ output$OutYnum <- renderText({
 #UI output for type of Shapes variables (production)
 #output in src01ePanelGraphs_card6_7
 output$ShapeLevs <- renderText({
-  observe(input$varsDone)
+  #observe(input$varsDone)
   if (ShapeLevs() >= 25)
     txt <- paste(
       "Your Shapes variable has ",
@@ -310,71 +274,145 @@ output$ShapeLevs <- renderText({
 })
 
 #Series of choices for 1way or 2way or shapes graphs
-#1WAY without shapes
-observeEvent(c(input$varsDone), {
-  #graphs for Categorical X-axis & 1way ANOVA
-  if (input$ShapesOpt == "No" &
-      CatGp() == 0 &
-      Xnum() == FALSE)
-    updateSelectInput(
-      #session = "graphType",
-      inputId = "graphType",
-      #label = tags$strong("Choose graph type"),
-      choices = c(
-        "Boxplot",
-        "Bar graph",
-        "Violin plot",
-        "Point & Errorbar",
-        "Density plot",
-        "Histogram plot"
-      )
+#effi- start
+observeEvent(input$varsDone, {
+  
+  # --- 1 WAY (categorical X, no grouping) ---
+  if (input$ShapesOpt == "No" &&
+      CatGp() == 0 &&
+      Xnum() == FALSE) {
+    
+    choices <- c(
+      "Boxplot",
+      "Bar graph",
+      "Violin plot",
+      "Point & Errorbar",
+      "Density plot",
+      "Histogram plot"
     )
-})
-#1WAY with shapes
-observeEvent(c(input$varsDone), {
-  #graphs for Categorical X-axis & 1way ANOVA with randomised blocks/shapes
-  if (CatGp() == 0 &
-      input$ShapesOpt == "Yes" &
-      Xnum() == FALSE)
-    updateSelectInput(
-      #session = "graphType",
-      inputId = "graphType",
-      #label = tags$strong("Choose graph type"),
-      choices = c(
-        "Boxplot",
-        "Bar graph",
-        "Violin plot",
-        "Point & Errorbar",
-        "Before-after plot"
-      )
+    
+    # --- 1 WAY WITH SHAPES ---
+  } else if (CatGp() == 0 &&
+             input$ShapesOpt == "Yes" &&
+             Xnum() == FALSE) {
+    
+    choices <- c(
+      "Boxplot",
+      "Bar graph",
+      "Violin plot",
+      "Point & Errorbar",
+      "Before-after plot"
     )
-})
-#2WAY without or with shapes
-observeEvent(c(input$varsDone), {
-  #graphs for Categorical X-axis & 2way ANOVA
-  if (CatGp() %in% c("TRUE", "FALSE") &
-      input$ShapesOpt %in% c("No", "Yes") &
-      Xnum() == FALSE)
-    updateSelectInput(
-      #session = "graphType",
-      inputId = "graphType",
-      #label = tags$strong("Choose graph type"),
-      choices = c("Boxplot", "Bar graph", "Violin plot", "Point & Errorbar")
+    
+    # --- 2 WAY ---
+  } else if (CatGp() %in% c(TRUE, FALSE) &&
+             input$ShapesOpt %in% c("No", "Yes") &&
+             Xnum() == FALSE) {
+    
+    choices <- c(
+      "Boxplot",
+      "Bar graph",
+      "Violin plot",
+      "Point & Errorbar"
     )
+    
+    # --- NUMERIC X + CATEGORICAL GROUPING ---
+  } else if (Xnum() == TRUE &&
+             Ynum() == TRUE &&
+             CatGp() == TRUE) {
+    
+    choices <- c("Numeric XY 1")
+    
+    # --- NUMERIC X + NUMERIC GROUPING ---
+  } else if (Xnum() == TRUE &&
+             Ynum() == TRUE &&
+             CatGp() == FALSE) {
+    
+    choices <- c("Numeric XY 2")
+    
+  } else {
+    return(NULL)
+  }
+  
+  updateSelectInput(
+    session,
+    inputId = "graphType",
+    choices = choices,
+    selected = choices[1]
+  )
+  
 })
-observeEvent(c(input$varsDone), {
-  #graphs for Numeeric X-axis & categorical Grouping
-  if (#input$ShapesOpt == "No" &
-    Xnum() == TRUE & Ynum() == TRUE & CatGp() == TRUE)
-    updateSelectInput(#session = "graphType",
-      inputId = "graphType", #label = tags$strong("Choose graph type"),
-      choices = c("Numeric XY 1"))
-})
-observeEvent(c(input$varsDone), {
-  #graphs for Numeeric X-axis & numeric Grouping
-  if (#input$ShapesOpt == "No" &
-    Xnum() == TRUE & Ynum() == TRUE & CatGp() == FALSE)
-    updateSelectInput(#session = "graphType",
-      inputId = "graphType", #label = tags$strong("Choose graph type"),
-      choices = c("Numeric XY 2"))
-})
+
+#effi- end
+
+# #1WAY without shapes
+# observeEvent(c(input$varsDone), {
+#   #graphs for Categorical X-axis & 1way ANOVA
+#   if (input$ShapesOpt == "No" &
+#       CatGp() == 0 &
+#       Xnum() == FALSE)
+#     updateSelectInput(
+#       #session = "graphType",
+#       inputId = "graphType",
+#       #label = tags$strong("Choose graph type"),
+#       choices = c(
+#         "Boxplot",
+#         "Bar graph",
+#         "Violin plot",
+#         "Point & Errorbar",
+#         "Density plot",
+#         "Histogram plot"
+#       )
+#     )
+# })
+# #1WAY with shapes
+# observeEvent(c(input$varsDone), {
+#   #graphs for Categorical X-axis & 1way ANOVA with randomised blocks/shapes
+#   if (CatGp() == 0 &
+#       input$ShapesOpt == "Yes" &
+#       Xnum() == FALSE)
+#     updateSelectInput(
+#       #session = "graphType",
+#       inputId = "graphType",
+#       #label = tags$strong("Choose graph type"),
+#       choices = c(
+#         "Boxplot",
+#         "Bar graph",
+#         "Violin plot",
+#         "Point & Errorbar",
+#         "Before-after plot"
+#       )
+#     )
+# })
+# 
+# 
+# 
+# #2WAY without or with shapes
+# observeEvent(c(input$varsDone), {
+#   #graphs for Categorical X-axis & 2way ANOVA
+#   if (CatGp() %in% c("TRUE", "FALSE") &
+#       input$ShapesOpt %in% c("No", "Yes") &
+#       Xnum() == FALSE)
+#     updateSelectInput(
+#       #session = "graphType",
+#       inputId = "graphType",
+#       #label = tags$strong("Choose graph type"),
+#       choices = c("Boxplot", "Bar graph", "Violin plot", "Point & Errorbar")
+#     )
+# })
+# observeEvent(c(input$varsDone), {
+#   #graphs for Numeeric X-axis & categorical Grouping
+#   if (#input$ShapesOpt == "No" &
+#     Xnum() == TRUE & Ynum() == TRUE & CatGp() == TRUE)
+#     updateSelectInput(#session = "graphType",
+#       inputId = "graphType", #label = tags$strong("Choose graph type"),
+#       choices = c("Numeric XY 1"))
+# })
+# observeEvent(c(input$varsDone), {
+#   #graphs for Numeeric X-axis & numeric Grouping
+#   if (#input$ShapesOpt == "No" &
+#     Xnum() == TRUE & Ynum() == TRUE & CatGp() == FALSE)
+#     updateSelectInput(#session = "graphType",
+#       inputId = "graphType", #label = tags$strong("Choose graph type"),
+#       choices = c("Numeric XY 2"))
+# })

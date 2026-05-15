@@ -2,13 +2,13 @@
 
 #get variables as a or a*b for lmer and emmeans specs
 dep <- reactive({
-  observe({c(input$logTransX, input$addVarsOpt)})
+  #observe({c(input$logTransX, input$addVarsOpt)})
   #initiate NULL vectors
   g4 <- NULL
   dep1 <- NULL
   x = input$varsOne
   #get Grouping variable
-  if(input$addVarsOpt == "Yes") g4 <- input$varsFour
+  if(input$addVarsOpt == "Yes") {g4 <- input$varsFour}
   #get predictor when X is categorical 1way ANOVA
   #PBrvw if (!is.null(g4) && g4 != "") paste(x, g4, sep = "*") else xE
   if(CatGp() == 0 & Xnum() == FALSE) dep1 <- x
@@ -35,38 +35,42 @@ output$depReactive <- renderText({ paste(as.formula(formula(decideModel()))) })
 #series of reactives to make emmeans formula
 #reactive for emmeans specs Pairs
 emmPairs <- reactive({
-  observe(c(input$emm_type))
+  #observe(c(input$emm_type))
+  #effi - start
+  if(input$emm_type != "Pairwise") return(NULL) 
+  #effi - end
   emmDep <- dep()
   if(input$emm_type == "Pairwise")
-    fml <- as.formula(paste("pairwise", "~", emmDep)) 
+  as.formula(paste("pairwise", "~", emmDep)) 
 })
 #UI output (dev only)
 output$emmPairFML <- renderText({ paste(emmFml()) })
 #reactive for emmeans specs Levelwise1
 emmLev1 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Levelwise 1" & 
+  #observe(c(input$emm_type, input$addVarsOpt))
+  #effi - start
+  if(input$emm_type == "Levelwise - Grouping variable" & 
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsOne, input$varsFour, 
                     sep = "|")
-  fml <- as.formula(sprintf('%s ~ %s', 
+  as.formula(sprintf('%s ~ %s', 
                             "pairwise", emmDep))
 })
 #reactive for emmeans specs Levelwise2
 emmLev2 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Levelwise 2" & 
+  #observe(c(input$emm_type, input$addVarsOpt))
+  if(input$emm_type == "Levelwise - X-variable" & 
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsFour, input$varsOne, 
                     sep = "|")
-  fml <- as.formula(sprintf('%s ~ %s', 
+  as.formula(sprintf('%s ~ %s', 
                             "pairwise", emmDep))
 })
 
 #### start - 2way trt.vs.ctrl contrasts 02/10/2025
 emm2wLev1 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Compare to reference - 2way 1" & 
+  #observe(c(input$emm_type, input$addVarsOpt))
+  if(input$emm_type == "To reference X-variable" & 
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsOne, input$varsFour, 
                     sep = "|")
@@ -75,8 +79,8 @@ emm2wLev1 <- reactive({
 })
 #reactive for emmeans specs Levelwise2
 emm2wLev2 <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
-  if(input$emm_type == "Compare to reference - 2way 2" & 
+  #observe(c(input$emm_type, input$addVarsOpt))
+  if(input$emm_type == "To reference Grouping variable" & 
      input$addVarsOpt == "Yes")
     emmDep <- paste(input$varsFour, input$varsOne, 
                     sep = "|")
@@ -88,60 +92,126 @@ emm2wLev2 <- reactive({
 
 #reactive for emmeans specs trt.vs.ctrl
 emmRef <- reactive({
-  observe(c(input$emm_type, input$addVarsOpt))
+  #observe(c(input$emm_type, input$addVarsOpt))
   if(input$emm_type == "Compare to reference" & 
      input$addVarsOpt == "No"){
     emmDep <- paste(input$varsOne)
   fml <- as.formula(sprintf('%s ~ %s', 
                             "trt.vs.ctrl", emmDep))}
 })
-#UI output SelectInput for Ref level with trt.vs.ctrl
+
+
+#effi - start
 output$emmRefType <- renderUI({
-  observe({input$emm_type})
-  if(input$emm_type %in% c("Compare to reference",
-                         "Compare to reference - 2way 1",
-                         "Compare to reference - 2way 2")){
-    numericInput(#session = "graphType", 
+  
+  if (input$emm_type %in% c("Compare to reference",
+                            "To reference X-variable",
+                            "To reference Grouping variable")) {
+    
+    req(avgFile1())
+    # your clean switch block
+    levs <- switch(input$emm_type,
+                   "Compare to reference" = input$varsReLevel,
+                   "To reference X-variable" = input$varsReLevel,
+                   #"To reference Grouping variable" = input$varsReLevelGp
+                   "To reference Grouping variable" = {
+                     if (CatGp()) {input$varsReLevelGp
+                     } else {
+                         input$varsFour}
+                   }
+    )
+    # only require AFTER assignment
+    req(levs)
+    levs <- as.character(levs)
+    choices <- setNames(seq_along(levs), levs)
+    selectInput(
       inputId = "emm_Reftype",
-      label = tags$strong("Choose reference level (only numbers 1, 2.. allowed)"), 
-      value = 1, min = 1, step = 1, max = 100)}
+      label = tags$strong("Choose reference level"),
+      choices = choices,
+      selected = choices[[1]]
+    )
+  }
 })
-#reactive to get ref level to give emmeans
-#nRefval <- reactive({ 
-#  n <- input$emm_Reftype
-#  n
-#})
+#effi - end
 
 #reactive for emmeans fml of all types 
 emmFml <- reactive({
   #formula output based on choice of comparison
-  observe(input$emm_type) 
-  if(input$emm_type == "Pairwise") fml <- emmPairs()
-  if(input$emm_type == "Levelwise 1") fml <- emmLev1()
-  if(input$emm_type == "Levelwise 2") fml <- emmLev2()
-  if(input$emm_type == "Compare to reference") fml <- emmRef()
+  #observe(input$emm_type) 
+  if(input$emm_type == "Pairwise") return(emmPairs())
+  if(input$emm_type == "Levelwise - Grouping variable") return(emmLev1())
+  if(input$emm_type == "Levelwise - X-variable") return(emmLev2())
+  if(input$emm_type == "Compare to reference") return(emmRef())
   ### for 2way - start
-  if(input$emm_type == "Compare to reference - 2way 1") fml <- emm2wLev1()
-  if(input$emm_type == "Compare to reference - 2way 2") fml <- emm2wLev2()
+  if(input$emm_type == "To reference X-variable") return(emm2wLev1())
+  if(input$emm_type == "To reference Grouping variable") return(emm2wLev2())
   ### for 2way - end
-  fml
+  return(NULL)
 })
 
 #reactive for main emmeans 
+####effi-start
 Comp1 <- reactive({
   #get linear model
   M1<-decideModel()
-  #req(nRefval)
-  #nRef <- nRefval()
-  nRef <- input$emm_Reftype #from user input
+  nRef <- as.numeric(input$emm_Reftype) #from user input
+  if (length(nRef) == 0 || is.na(nRef)) nRef <- 1
   fml <- emmFml() #emmeans formula
+  req(!is.null(fml))
+  # get number of levels safely
+  df <- avgFile1()
+  req(df)
+  #Ensure enough levels ONLY when needed
+  if (input$emm_type %in% c("Compare to reference",
+                            "To reference X-variable",
+                            "To reference Grouping variable")) {
+    # must NOT be numeric
+    #req(!Xnum())
+    # must have >= 2 levels
+    levs <- switch(input$emm_type,
+                   #"Compare to reference" = input$varsReLevel,
+                   "Compare to reference" = {
+                     if (Xnum()) {input$varsOne
+                     } else {
+                       input$varsReLevel}
+                   },
+                   #"To reference X-variable" = input$varsReLevel,
+                   "To reference X-variable" = {
+                     if (Xnum()) {input$varsOne
+                     } else {
+                       input$varsReLevel}
+                   },
+                   #"To reference Grouping variable" = input$varsReLevelGp
+                   "To reference Grouping variable" = {
+                     if (CatGp()) {input$varsReLevelGp
+                     } else {
+                       input$varsFour}
+                   }
+    )
+    #req(levs)
+    #k <- length(levs)
+    #req(k > 2)
+    #req(nRef >= 1)
+    M2 <- emmeans(M1,
+                  specs = fml,
+                  type = "response",
+                  adjust = "fdr",
+                  ref = nRef)
+  } else {# do not pass nref when not needed e.g., pairwise
   M2<-emmeans(M1, 
               specs = fml,
               type = "response",
-              adjust="fdr",
-              ref = nRef
-  )
+              adjust="fdr"
+  )}
+  return(M2)
 })
+
+Comp1_cached <- reactive({
+  Comp1()
+})
+
+####effi - end
+
 
 #UI output of emmeans $emmeans part
 output$Comp1 <- render_gt({
@@ -149,11 +219,11 @@ output$Comp1 <- render_gt({
   #df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   ##if(input$DoRelevel == "No") df <- file1()
   #file4 <- df
-  t1 <- Comp1()
-  t2 <- as.data.frame(t1[[1]])  #extract $emmeans from emmeans output
+  t1 <- Comp1_cached()
+  t2 <- as.data.frame(t1$emmeans)  #extract $emmeans from emmeans output
   n <- length(colnames(t2))  #get dim of table
   #colnames(t2)[1] <- colnames(file4)[colnames(file4)==input$varsOne]
-  observe(input$addVarsOpt)  #variable width for 1w or 2w ANOVA
+  #observe(input$addVarsOpt)  #variable width for 1w or 2w ANOVA
   if(input$addVarsOpt == "Yes") from = 3
   if(input$addVarsOpt == "No") from = 2
   gt::gt(data = t2)  %>% 
@@ -174,10 +244,10 @@ output$Comp1 <- render_gt({
 
 #UI output of emmans $contrasts
 output$Comp2 <- render_gt({
-  t3 <- Comp1()
-  t4 <- as.data.frame(t3[[2]])  #extract $contrasts from emmeans output
+  t3 <- Comp1_cached()
+  t4 <- as.data.frame(t3$contrasts)  #extract $contrasts from emmeans output
   n <- length(colnames(t4))  #get dim of table
-  observe(input$addVarsOpt)  #get column values for DT formatting
+  #observe(input$addVarsOpt)  #get column values for DT formatting
   if(input$addVarsOpt == "Yes" & 
      input$emm_type != "Pairwise") from = 3
   if(input$addVarsOpt == "No") from = 2
@@ -215,44 +285,43 @@ nlev <- eventReactive(input$MorS, { #changed from reactive
   if(Xnum() == FALSE){
     df <- avgFile1()
   #varLevels <- length(levels(as.factor(df[[input$varsOne]])))
-  varLevels <- length(unique(df[[1]]))
+  #varLevels <- length(unique(df[[input$varsOne]])) #effi
+  varLevels <- length(input$varsReLevel) #effi
   }
-  varLevels
+  length(varLevels)
 })
 
-#observer for t.tests
+# effi- start
 observe({
-  req(input$varsOne)
-  if(input$addVarsOpt == "No" & 
-     nlev() == 2)
-    updateSelectInput(#session = "graphType", 
-      inputId = "emm_type",
-      #label = tags$strong("Choose graph type"),
-      choices = c("Pairwise"))
+  choices <- "Pairwise"
+  if (Xnum()) {
+    # numeric X forces 2-way logic
+    choices <- c("Pairwise",
+                 "Levelwise - X-variable",
+                 "To reference Grouping variable")
+    
+  } else if (input$addVarsOpt == "Yes" && !Xnum()) {
+    choices <- c("Pairwise",
+                 "Levelwise - X-variable",
+                 "Levelwise - Grouping variable",
+                 "To reference X-variable",
+                 "To reference Grouping variable")
+    } else if (input$addVarsOpt == "No" && nlev() == 2 && Xnum()) {
+    
+    choices <- c("Pairwise")
+    
+  } else if (input$addVarsOpt == "No" && nlev() > 2 && Xnum()) {
+    
+    choices <- c("Pairwise",
+                 "Compare to reference")
+  }
+  
+  updateSelectInput(
+    session,
+    inputId = "emm_type",
+    choices = choices,
+    selected = choices[1]
+  )
 })
 
-#observer for 1w ANOVAs
-observe({
-  req(input$varsOne)
-  if(input$addVarsOpt == "No" & 
-     nlev() > 2)
-    updateSelectInput(#session = "graphType", 
-      inputId = "emm_type",
-      #label = tags$strong("Choose graph type"),
-      choices = c("Pairwise",
-                  "Compare to reference"))
-})
-
-#observer for 2w ANOVAs
-observe({
-  req(input$varsOne, input$varsFour)
-  if(input$addVarsOpt == "Yes")
-    updateSelectInput(#session = "graphType", 
-      inputId = "emm_type",
-      #label = tags$strong("Choose graph type"),
-      choices = c("Pairwise",
-                  "Levelwise 1",
-                  "Levelwise 2",
-                  "Compare to reference - 2way 1",
-                  "Compare to reference - 2way 2"))
-})
+# effi- end

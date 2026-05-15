@@ -113,14 +113,16 @@ avgFileMixed <- eventReactive(input$analyseData, {
   avgdf
 })
 #get result only when button clicked
-avgFile1 <- eventReactive(input$analyseData, {
-  if (input$MorS == "Simple") avgFileSimple()
-  else avgFileMixed()
+avgFile1 <- eventReactive(list(input$analyseData, input$MorS), { #effi-
+  if (input$MorS == "Simple") {
+    avgFileSimple()
+  } else {
+      avgFileMixed()}
 })
 #output to UI
 output$avgFile_out <- render_gt({
   #observe(input$analyseData)
-  req(c(file1(), avgFile1(), input$MorS))
+  req(file1(), avgFile1(), input$MorS)
   #ifelse(input$AvgRF == "Yes",
   avgdf1 <- avgFile1() #, avgdf <- file1())
   gt(avgdf1) %>% 
@@ -306,19 +308,20 @@ avg_RandFplotreact <- eventReactive(input$analyseData, {
   req(avgFile1())
   avgpf <- AvgRFPlotSingCol()
   avgpf$data <- avgFile1()
+  txt <- if (Xnum()) "Size" else "Shape" #effi-
   avgpf <- avgpf  + 
     labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo),
-         subtitle = expr("(Shapes of data symbols are mapped to levels of the Random factor:"~!!input$varsSix~")"))
+         #subtitle = expr("("~txt~" of data symbols are mapped to levels of the Random factor:"~!!input$varsSix~")"),
+         subtitle = paste0("(", txt," of data points mapped to the Random factor: ",input$varsSix, ")")
+    )
   avgpf
 })
 #UI output of avg plot
-output$avgRandFplot <- renderPlot({
-  if (input$MorS == "Mixed" & input$AvgRF == "Yes") {
-    p <- avg_RandFplotreact()} 
-  if (input$MorS == "Mixed" & input$AvgRF == "No") {
-    p <- avg_RandFplotreact()} 
-  if (input$MorS == "Simple") {
-    p <- NULL} 
+output$avgRandFplot <- renderPlot({ 
+  #effi-start
+  if (input$MorS == "Mixed") {
+    p <- avg_RandFplotreact()} else {p <- NULL} 
+  #effi-end
   p
 })
 

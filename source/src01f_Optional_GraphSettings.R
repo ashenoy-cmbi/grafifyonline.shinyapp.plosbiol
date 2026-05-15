@@ -95,26 +95,6 @@ output$error_type <- renderUI({
     )
 })
 
-#UI output for boxwidth for XYNum1 and XYNum2 
-#13 Jun 2025
-
-# UI output for new plot_xy_Group 
-# 15 Jun 2025
-#output$out_smoothyesno <- renderUI({
-#  if (input$graphType %in% c("Numeric XY 1", "Numeric XY 2"))
-#    selectizeInput(
-#      "smooth_yesno",
-#      label = tooltip(
-#        trigger = list(tags$strong("Smooth Line"), bs_icon("info-circle")),
-#        "Add a smooth line and then select the type (loess or linear)."
-#      ),
-#      choices = c("Yes", "No"),
-#      options = list(dropdownParent = 'body'),
-#      selected =  "No", 
-#      multiple = FALSE
-#    )
-#})
-
 #output in src01PanelGraphs_card6_7
 output$out_smoothType <- renderUI({
   #observe(input$smooth_yesno, input$graphType)
@@ -164,15 +144,27 @@ output$out_box_wid <- renderUI({
 })
 
 #updating default options after user selection of graphs
-observe({
-  if (input$graphType %in% c("Numeric XY 1", "Numeric XY 2"))
+# observe({
+#   if (input$graphType %in% c("Numeric XY 1", "Numeric XY 2"))
+#     updateNumericInput(
+#       #session = "graphType",
+#       inputId = "box_alpha",
+#       #label = tags$strong("Choose graph type"),
+#       value = 0.5
+#     )
+# })
+#effi-start
+observeEvent(input$graphType, {
+  if (input$graphType %in% c("Numeric XY 1", "Numeric XY 2")) {
     updateNumericInput(
-      #session = "graphType",
+      session = session,
       inputId = "box_alpha",
-      #label = tags$strong("Choose graph type"),
       value = 0.5
     )
+  }
 })
+
+#effi-end
 
 #output in src01PanelGraphs_card6_7
 output$out_sm_alpha <- renderUI({

@@ -14,7 +14,7 @@ fluidRow(
            label = tooltip(trigger = list(
              tags$strong("Graph Height (cm)"), bs_icon("info-circle")
            ), "Adjust height of PDF file."),
-           value = 12
+           value = 12.5
          )),
   column(3, numericInput(
     "g_wid",
@@ -22,7 +22,7 @@ fluidRow(
     label = tooltip(trigger = list(
       tags$strong("Graph Width (cm)"), bs_icon("info-circle")
     ), "Adjust width of PDF file."),
-    value = 15
+    value = 18
   )),
   #tags$br(),
   #column so that next button is not on the same line and less wide

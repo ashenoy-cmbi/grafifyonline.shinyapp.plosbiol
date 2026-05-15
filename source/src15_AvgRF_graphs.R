@@ -1,56 +1,55 @@
 #reactives for AvgRF plot on ANOVA panel
 AvgRFwhichplotChosenGraph <- eventReactive(input$analyseData, {
-  req(c(input$graphType,
-        input$addVarsOpt))
+  req(input$graphType,input$addVarsOpt)
   #befafter graph w & w/o facets
   if (input$graphType == "Before-after plot"  &
       input$addVarsOpt == "No")
     p <- plotBefAfterAvg_react()
-
+  
   #Density & Histogram
   if (input$graphType == "Density plot")
     p <- plotDensity_react()
   if (input$graphType == "Histogram plot" )
     p <- plotHistogram_react()
   
-    #3dBox graphs w & w/o facets
-    if (input$graphType == "Boxplot" &
-        input$addVarsOpt == "No")
-      p <- plot3dAvgBox_react()
-    #3dViolin graphs w & w/o facets
-    if (input$graphType == "Violin plot" &
-        input$addVarsOpt == "No")
-      p <- plot3dAvgViolin_react()
-    #3dBar graphs w & w/o facets
-    if (input$graphType == "Bar graph" &
-        input$addVarsOpt == "No")
-      p <- plot3dAvgBar_react()
-    #3dpoint graphs w & w/o facets
-    if (input$graphType == "Point & Errorbar" &
-        input$addVarsOpt == "No")
-      p <- plot3dAvgPoint_react()
-    #4dbox w/ w/o shapes (w/o facets)
-    if (input$graphType == "Boxplot" &
-        input$addVarsOpt == "Yes")
-      p <- plot4dAvgShapesBox_react()
-    #4dbar w/ w/o shapes (wo/ facets)
-    if (input$graphType == "Bar graph" &
-        input$addVarsOpt == "Yes")
-      p <- plot4dAvgShapesBar_react()
-    #4dviolin w/ w/o shapes (w/o facets)
-    if (input$graphType == "Violin plot" &
-        input$addVarsOpt == "Yes")
-      p <- plot4dAvgShapesViolin_react()
-    #4dbar w/ w/o shapes (wo/ facets)
-    if (input$graphType == "Point & Errorbar" &
-        input$addVarsOpt == "Yes")
-      p <- plot4dAvgShapesPoint_react()
-    if (input$graphType == "Numeric XY 1" &
-        input$addVarsOpt == "Yes")
-      p <- plot_AvgXYCat_react()
-    if (input$graphType == "Numeric XY 2" &
-        input$addVarsOpt == "Yes")
-      p <- plot_AvgXYNum_react()    
+  #3dBox graphs w & w/o facets
+  if (input$graphType == "Boxplot" &
+      input$addVarsOpt == "No")
+    p <- plot3dAvgBox_react()
+  #3dViolin graphs w & w/o facets
+  if (input$graphType == "Violin plot" &
+      input$addVarsOpt == "No")
+    p <- plot3dAvgViolin_react()
+  #3dBar graphs w & w/o facets
+  if (input$graphType == "Bar graph" &
+      input$addVarsOpt == "No")
+    p <- plot3dAvgBar_react()
+  #3dpoint graphs w & w/o facets
+  if (input$graphType == "Point & Errorbar" &
+      input$addVarsOpt == "No")
+    p <- plot3dAvgPoint_react()
+  #4dbox w/ w/o shapes (w/o facets)
+  if (input$graphType == "Boxplot" &
+      input$addVarsOpt == "Yes")
+    p <- plot4dAvgShapesBox_react()
+  #4dbar w/ w/o shapes (wo/ facets)
+  if (input$graphType == "Bar graph" &
+      input$addVarsOpt == "Yes")
+    p <- plot4dAvgShapesBar_react()
+  #4dviolin w/ w/o shapes (w/o facets)
+  if (input$graphType == "Violin plot" &
+      input$addVarsOpt == "Yes")
+    p <- plot4dAvgShapesViolin_react()
+  #4dbar w/ w/o shapes (wo/ facets)
+  if (input$graphType == "Point & Errorbar" &
+      input$addVarsOpt == "Yes")
+    p <- plot4dAvgShapesPoint_react()
+  if (input$graphType == "Numeric XY 1" &
+      input$addVarsOpt == "Yes")
+    p <- plot_AvgXYCat_react()
+  if (input$graphType == "Numeric XY 2" &
+      input$addVarsOpt == "Yes")
+    p <- plot_AvgXYNum_react()    
 
   #output reactive graph p
   p
@@ -599,7 +598,7 @@ plot_AvgXYCat_react <- reactive({
 ##### copilot (edited) code start
 plot_AvgXYNum_react <- reactive({
   df <- file1()
-  observe(input$XYBox)
+  #observe(input$XYBox) #effi- start/end
   
   # Build common arguments
   args <- list(
