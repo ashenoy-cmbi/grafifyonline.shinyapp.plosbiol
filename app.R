@@ -374,6 +374,7 @@ server <- function(input, output, session) {
   #Random variable varsSix reactive Box 9.1
   v6Input <- eventReactive(input$startBtn, {
     req(file1())
+    #req(avgFile1()) #effi fix
     # Variable selection:
     varSelectizeInput(
       inputId = "varsSix",
@@ -383,11 +384,12 @@ server <- function(input, output, session) {
           tags$strong("Random factor for Mixed ANOVA."),
           bs_icon("info-circle")
         ),
-        "Choose a column from your data. Note: a random intercepts model will be fitted."
+        "Choose up to 2 columns from your data. Note: a random intercepts model will be fitted."
       ),
-      data = file1(),
-      multiple = FALSE,
-      options = list(dropdownParent = 'body'),
+      data = file1(), #effi fix
+      multiple = TRUE, #effi fix - subject
+      options = list(dropdownParent = 'body',
+                     maxItems = 2), #effi fix 2 items
       selected = ""
     )
   })
@@ -860,7 +862,7 @@ server <- function(input, output, session) {
     subtitle_txt <- NULL
     
     #Mean + error bars plots
-    if (input$graphType %in% c("Bar graph", "Point & errorbars")) {
+    if (input$graphType %in% c("Bar graph", "Point & Errorbar")) {
       err <- input$error_type  # adjust if different input ID
       if (err == "SD") {
         subtitle_txt <- "Mean ± SD shown"
@@ -886,9 +888,14 @@ server <- function(input, output, session) {
       } 
     }
     
-    # Box / violin plots
-    if (input$graphType %in% c("Boxplot", "Violin plot")) {
+    # Box plots
+    if (input$graphType %in% c("Boxplot")) {
       subtitle_txt <- "Median (IQR) and whiskers (1.5xIQR) shown"
+    }
+    
+    # violin plots
+    if (input$graphType %in% c("Violin plot")) {
+      subtitle_txt <- "Median (IQR) and whiskers (1.5xIQR) & data distribution shown"
     }
     
     p <- p + labs(subtitle = subtitle_txt)

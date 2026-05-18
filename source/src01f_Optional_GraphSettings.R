@@ -359,7 +359,7 @@ output$colSeqOut <- renderUI({
       trigger = list(tags$strong("Colour sequence"), bs_icon("info-circle")),
       "Colours for categorical variables are picked sequentially from the chosen colour palette (Default). If set to FALSE, the most distant colours are chosen."
     ),
-    choices = c(TRUE, FALSE),
+    choices = c(TRUE, FALSE), 
     selected = TRUE,
     options = list(dropdownParent = 'body'),
     multiple = FALSE
@@ -376,7 +376,7 @@ output$colRevOut <- renderUI({
         tags$strong("Reverse swatch order?"),
         bs_icon("info-circle")
       ),
-      "Whether or not to pick colours from palette swatches in default or reverse order. Set to TRUE for the order to be reversed."
+      "Whether or not to pick colours from palette swatches in default or reverse order. Set to TRUE for the order to be reversed"
     ),
     choices = c(TRUE, FALSE),
     selected = FALSE,

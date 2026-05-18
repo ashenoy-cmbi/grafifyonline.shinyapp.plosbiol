@@ -6,42 +6,25 @@ avgFileSimple <- eventReactive(input$analyseData, {
   req(input$addVarsOpt)
   #### PBrvs
   if (input$addVarsOpt == "No") {
-    
     # ---- no grouping (1-way design)
     df <- RelevelFile1.1()
-    
   } else {
-    
     # ---- grouping is present ----
-    
     if (Xnum() == TRUE && CatGp() == FALSE) {
-      
       # numeric X + numeric grouping
       df <- file1()
-      
     } else if (Xnum() == TRUE && CatGp() == TRUE) {
-      
       # numeric X + categorical grouping
       df <- RelevelFile1.2()
-      
     } else if (Xnum() == FALSE) {
-      
       # categorical X + grouping (ANY type)
       # includes BOTH:
       #     - categorical grouping
       #     - numeric grouping (your new case)
       df <- RelevelFile1()
-      
     }
-    
   }
   ####
-#  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
-#  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
-#  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
-#  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
-#  if (Xnum() == FALSE & CatGp() == FALSE) { df <- RelevelFile1()} #PBrvw to add for X-categorical and numeric CatGp
-  
   df  # no averaging needed
 })
 
@@ -52,66 +35,52 @@ avgFileMixed <- eventReactive(input$analyseData, {
   req(input$AvgRF)
   #### PBrvs
   if (input$addVarsOpt == "No") {
-    
     # ---- no grouping (1-way design)
     df <- RelevelFile1.1()
-    
   } else {
-    
     # ---- grouping is present ----
-    
     if (Xnum() == TRUE && CatGp() == FALSE) {
-      
       # numeric X + numeric grouping
       df <- file1()
-      
     } else if (Xnum() == TRUE && CatGp() == TRUE) {
-      
       # numeric X + categorical grouping
       df <- RelevelFile1.2()
-      
     } else if (Xnum() == FALSE) {
-      
       # categorical X + grouping (ANY type)
       # includes BOTH:
       #     - categorical grouping
       #     - numeric grouping (your new case)
       df <- RelevelFile1()
-      
     }
-    
   }
-  ####
-#  if (Xnum() == TRUE & CatGp() == FALSE) { df <- file1() }
-#  if (Xnum() == TRUE & CatGp() == TRUE)  { df <- RelevelFile1.2() }
-#  if (Xnum() == FALSE & CatGp() == TRUE) { df <- RelevelFile1() }
-#  if (Xnum() == FALSE & input$addVarsOpt == "No") { df <- RelevelFile1.1() }
-#  if (Xnum() == FALSE & CatGp() == FALSE) {df <- RelevelFile1() } #PBrvw to add for X-categorical and numeric CatGp
-  
   ns <- colnames(df)
   x1 <- ns[ns == input$varsOne]
   y  <- ns[ns == input$varsTwo]
-  if (input$addVarsOpt == "Yes") { x2 <- ns[ns == input$varsFour] }
-  r1 <- ns[ns == input$varsSix]
-  
-  if (input$AvgRF == "Yes") {
-    if (input$addVarsOpt == "Yes") {
-      avgdf <- table_summary(df, y, c(x1, x2, r1))
-      colnames(avgdf)[4] <- y
+  #get subject RF
+  r1 <- intersect(ns, as.character(input$varsSix))
+  group_vars <- c(x1, r1)       #effi - subj RF
+  if (input$addVarsOpt == "Yes") {x2 <- ns[ns == input$varsFour] }
+  if (input$addVarsOpt == "Yes") {
+    group_vars <- c(x1, x2, r1)
     } else {
-      avgdf <- table_summary(df, y, c(x1, r1))
-      colnames(avgdf)[3] <- y
+      group_vars <- c(x1, r1)
+    } #effi - subj RF
+  if (input$AvgRF == "Yes") {
+    avgdf <- table_summary(df, y, group_vars)
+    # find the mean column safely
+    mean_col <- grep("\\.Mean$", colnames(avgdf), value = TRUE)
+    # rename it to match original Y
+    if (length(mean_col) == 1) {
+      colnames(avgdf)[colnames(avgdf) == mean_col] <- y
     }
-    ltab <- length(colnames(avgdf))
-    n1 <- ltab - 3
-    n2 <- ltab - 2
-    avgdf <- avgdf[, c(1:n1, n2:ltab)]
   } else {
-    avgdf <- df
-  }
-  
-  avgdf
+  avgdf <- df
+}
+avgdf
 })
+
+#### effi - subject rf end 
+
 #get result only when button clicked
 avgFile1 <- eventReactive(list(input$analyseData, input$MorS), { #effi-
   if (input$MorS == "Simple") {
@@ -163,12 +132,15 @@ mixMod <- reactive({
   ns <- colnames(df)
   x = ns[ns == input$varsOne]
   y = ns[ns == input$varsTwo]
-  RandIn = ns[ns == input$varsSix]
+  #RandIn = ns[ns == input$varsSix]
   dep <- dep() #get formula like predictors
-  #get random factor as lmer() 
-  rand <- paste("+ (1|",
-                input$varsSix, 
-                ")")
+  req(input$varsSix)
+  rf <- input$varsSix #as vector
+  rand_terms <- paste0("(1|", rf, ")") #build terms
+  rand <- paste(rand_terms, collapse = " + ") #formula
+  rand <- paste0(" + ", rand)
+  ## effi -fix subj RF
+  
   pred <- paste(dep, rand) #formula with random factor
   #get Y value with log10 and log2
   if(input$logTrans == "log10") {y <- paste("log10(", y, ")", sep = "")} 
@@ -282,12 +254,15 @@ RandFplotreact <- eventReactive(input$analyseData, {
           p <- p +
             scale_fill_manual(values = rep(as.character(input$colPick2),
                                            times = singColnum))}
+  #rf_plot <- input$varsSix[1] #effi - subject RF
+  rfp <- rf_plot() #effi - subject RF
   #add random factor as the facet
   if(input$MorS == "Mixed"){
-  p <- p + facet_wrap(vars(!!input$varsSix))+
+  #p <- p + facet_wrap(vars(!!input$varsSix))+
+    p <- p + facet_wrap(as.formula(paste("~", rfp)))+ #effi - subject RF
       #theme_grafify(aspect.ratio = 1)+
       labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo),
-           subtitle = expr("(Faceted by the Random factor:"~!!input$varsSix~")"))}
+           subtitle = expr("(Faceted by the Random factor:"~!!rfp~")"))} #effi - subject RF
   p
 })
 #UI output of faceted plot
@@ -300,7 +275,11 @@ output$RandFplot <- renderPlot({
 })
 
 
-source("./source/src15_AvgRF_graphs.R", #sources the AvgRF plot functions
+#source("./source/src15_AvgRF_graphs.R", #sources the AvgRF plot functions
+#       local = TRUE,
+#       echo = TRUE)
+#effi - subject RF
+source("./source/src15_AvgRF_graphs_subjRF.R", #sources the AvgRF plot functions
        local = TRUE,
        echo = TRUE)
 
@@ -308,11 +287,13 @@ avg_RandFplotreact <- eventReactive(input$analyseData, {
   req(avgFile1())
   avgpf <- AvgRFPlotSingCol()
   avgpf$data <- avgFile1()
-  txt <- if (Xnum()) "Size" else "Shape" #effi-
+  if (Xnum()) {txt <- "Size"} else {txt <- "Shape"} #effi-
+  #rf_plot <- input$varsSix[1] #effi - subject RF
+  rfp <- rf_plot() #effi - subject RF
   avgpf <- avgpf  + 
     labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo),
          #subtitle = expr("("~txt~" of data symbols are mapped to levels of the Random factor:"~!!input$varsSix~")"),
-         subtitle = paste0("(", txt," of data points mapped to the Random factor: ",input$varsSix, ")")
+         subtitle = paste0("(", txt," of data points mapped to the Random factor: ",rfp,")")
     )
   avgpf
 })

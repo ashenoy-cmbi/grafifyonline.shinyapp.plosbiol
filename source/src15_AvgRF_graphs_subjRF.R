@@ -1,3 +1,9 @@
+#get one RF variable
+rf_plot <- eventReactive(input$analyseData, {
+  req(input$varsSix)
+  rlang::sym(input$varsSix[[1]]) #may come as a list
+})
+
 #reactives for AvgRF plot on ANOVA panel
 AvgRFwhichplotChosenGraph <- eventReactive(input$analyseData, {
   req(input$graphType,input$addVarsOpt)
@@ -98,8 +104,9 @@ RFLevs <- eventReactive(input$analyseData, {
   if(input$MorS == "Simple"){nRFLev <- "A"}
   if(input$MorS == "Mixed"){ 
     df <- avgFile1()
-    rf_plot <- input$varsSix[1] #effi - subject RF
-    nRFLev <- length(levels(factor(df[[rf_plot]])))} #effi - subject RF
+    #rf_plot <- input$varsSix[1] #effi - subject RF
+    rfp <- rf_plot() 
+    nRFLev <- length(levels(factor(df[[rfp]])))} #effi - subject RF
   nRFLev
 })
 
@@ -113,23 +120,21 @@ output$RFLev_txt <- renderUI({
     }
   if (RFLevs() == "A"){
     txt <- NULL
-        #txt <- paste(
-    #  "Simple linear model chosen (no Random Factor used)."
-    #)
     }
   txt
 })
 
 ############# 4d shapes versions ##### point
 plot4dAvgShapesPoint_react <- reactive({
-  df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_4dshapesAvgPoint <- 
       plot_4d_point_sd(data = df,
                        xcol = !!input$varsOne, 
                        ycol = !!input$varsTwo,
                        points = !!input$varsFour,
-                       shapes = !!input$varsSix,
+                       shapes = !!rfp,
                        ErrorType = input$error_type,
                        ewid = input$ewid,
                        symsize = input$sym_size,
@@ -150,7 +155,7 @@ plot4dAvgShapesPoint_react <- reactive({
                        xcol = !!input$varsOne, 
                        ycol = !!input$varsTwo,
                        points = !!input$varsFour,
-                       shapes = !!input$varsSix,
+                       shapes = !!rfp,
                        ErrorType = input$error_type,
                        ewid = input$ewid,
                        symsize = input$sym_size,
@@ -172,7 +177,8 @@ output$bar4dshapesAvgPoint_out <- renderPlot({ plot4dAvgShapesPoint_react() })
 
 #4d shapes box
 plot4dAvgShapesBox_react <- reactive({
-  df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_4dshapesAvgBox <- 
       plot_4d_scatterbox(data = df,
@@ -185,7 +191,7 @@ plot4dAvgShapesBox_react <- reactive({
                          ColSeq = input$colSeq,
                          ColRev = input$colRev,
                          ColPal = input$colpal,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          boxes = !!input$varsFour,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
@@ -202,7 +208,7 @@ plot4dAvgShapesBox_react <- reactive({
                          ColSeq = input$colSeq,
                          ColRev = input$colRev,
                          ColPal = input$colpal,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          boxes = !!input$varsFour,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo)+
@@ -215,14 +221,15 @@ output$box4dshapesAvgPlot_out <- renderPlot({ plot4dAvgShapesBox_react() })
 
 #4d shapes bar
 plot4dAvgShapesBar_react <- reactive({
-  df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_4dshapesAvgBar <- 
       plot_4d_scatterbar(data = df,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
                          bars = !!input$varsFour,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          ErrorType = input$error_type,
                          ewid = input$ewid,
                          symsize = input$sym_size,
@@ -241,7 +248,7 @@ plot4dAvgShapesBar_react <- reactive({
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
                          bars = !!input$varsFour,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          ErrorType = input$error_type,
                          ewid = input$ewid,
                          symsize = input$sym_size,
@@ -261,7 +268,8 @@ output$bar4dshapesAvgPlot_out <- renderPlot({ plot4dAvgShapesBar_react() })
 
 #4d shapes violin
 plot4dAvgShapesViolin_react <- reactive({
-  df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_4dshapesAvgviolin <- 
       plot_4d_scatterviolin(data = df,
@@ -273,7 +281,7 @@ plot4dAvgShapesViolin_react <- reactive({
                             jitter = input$sym_jitter,
                             fontsize = input$font_size,
                             ColPal = input$colpal,
-                            shapes = !!input$varsSix,
+                            shapes = !!rfp,
                             boxes = !!input$varsFour,
                             xcol = !!input$varsOne, 
                             ycol = !!input$varsTwo,
@@ -291,7 +299,7 @@ plot4dAvgShapesViolin_react <- reactive({
                             ColSeq = input$colSeq,
                             ColRev = input$colRev,
                             ColPal = input$colpal,
-                            shapes = !!input$varsSix,
+                            shapes = !!rfp,
                             boxes = !!input$varsFour,
                             xcol = !!input$varsOne, 
                             ycol = !!input$varsTwo)+
@@ -305,7 +313,8 @@ output$violin4dshapesAvgPlot_out <- renderPlot({ plot4dAvgShapesViolin_react() }
 ############# 3d shapes versions ##### point
 #3d shapes point
 plot3dAvgPoint_react <- reactive({
-  df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_3dpoint <- 
       plot_3d_point_sd(data = df,
@@ -322,7 +331,7 @@ plot3dAvgPoint_react <- reactive({
                        ColRev = input$colRev,
                        fontsize = input$font_size,
                        ColPal = input$colpal,
-                       shapes = !!input$varsSix,
+                       shapes = !!rfp,
                        xcol = !!input$varsOne, 
                        ycol = !!input$varsTwo,
                        LogYTrans = input$logTrans)+
@@ -342,7 +351,7 @@ plot3dAvgPoint_react <- reactive({
                        ColSeq = input$colSeq,
                        ColRev = input$colRev,
                        ColPal = input$colpal,
-                       shapes = !!input$varsSix,
+                       shapes = !!rfp,
                        xcol = !!input$varsOne, 
                        ycol = !!input$varsTwo)+
       labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo))
@@ -353,7 +362,8 @@ output$point3dPlotAvg_out <- renderPlot({ plot3dAvgPoint_react() })
 
 #3d shapes box
 plot3dAvgBox_react <- reactive({
-  df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_3dbox <- 
       plot_3d_scatterbox(data = df,
@@ -366,7 +376,7 @@ plot3dAvgBox_react <- reactive({
                          ColSeq = input$colSeq,
                          ColRev = input$colRev,
                          ColPal = input$colpal,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
                          LogYTrans = input$logTrans)+
@@ -382,7 +392,7 @@ plot3dAvgBox_react <- reactive({
                          ColSeq = input$colSeq,
                          ColRev = input$colRev,
                          ColPal = input$colpal,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo)+
       labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo))
@@ -393,13 +403,14 @@ output$box3dPlotAvg_out <- renderPlot({ plot3dAvgBox_react() })
 
 #3d shapes bar
 plot3dAvgBar_react <- reactive({
-  df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_3dbar <- 
       plot_3d_scatterbar(data = df,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          ErrorType = input$error_type,
                          ewid = input$ewid,
                          symsize = input$sym_size,
@@ -417,7 +428,7 @@ plot3dAvgBar_react <- reactive({
       plot_3d_scatterbar(data = df,
                          xcol = !!input$varsOne, 
                          ycol = !!input$varsTwo,
-                         shapes = !!input$varsSix,
+                         shapes = !!rfp,
                          ErrorType = input$error_type,
                          ewid = input$ewid,
                          symsize = input$sym_size,
@@ -437,7 +448,8 @@ output$bar3dPlotAvg_out <- renderPlot({ plot3dAvgBar_react() })
 
 #3d shapes violin
 plot3dAvgViolin_react <- reactive({
-  df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_3dviolin <- 
       plot_3d_scatterviolin(data = df,
@@ -451,7 +463,7 @@ plot3dAvgViolin_react <- reactive({
                             ColSeq = input$colSeq,
                             ColRev = input$colRev,
                             ColPal = input$colpal,
-                            shapes = !!input$varsSix,
+                            shapes = !!rfp,
                             xcol = !!input$varsOne, 
                             ycol = !!input$varsTwo,
                             LogYTrans = input$logTrans)+
@@ -468,7 +480,7 @@ plot3dAvgViolin_react <- reactive({
                             ColSeq = input$colSeq,
                             ColRev = input$colRev,
                             ColPal = input$colpal,
-                            shapes = !!input$varsSix,
+                            shapes = !!rfp,
                             xcol = !!input$varsOne, 
                             ycol = !!input$varsTwo)+
       labs(title = expr("Plot of"~!!input$varsOne~"vs"~!!input$varsTwo))
@@ -479,7 +491,8 @@ output$violin3dPlotAvg_out <- renderPlot({ plot3dAvgViolin_react() })
 
 ######### before-after shapes
 plotBefAfterAvg_react <- reactive({
-  df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
+  rfp <- rf_plot()
+df <- RelevelFile1.1() #if(input$DoRelevel == "Yes") df <- RelevelFile1()
   #if(input$DoRelevel == "No") df <- file1()
   if(input$logTrans %in% c("log10", "log2")) plot_befafter <- 
       plot_befafter_shapes(data = df,
@@ -521,6 +534,7 @@ plotBefAfterAvg_react <- reactive({
 #### to make size mapped XY1 & XY2 graphs based on AvgRF or RF
 
 plot_AvgXYCat_react <- reactive({
+  rfp <- rf_plot()
   df <- RelevelFile1.2()
   
   # Build common arguments
@@ -590,7 +604,7 @@ plot_AvgXYCat_react <- reactive({
     geom_point(aes(fill = !!input$varsFour,
                    x = !!input$varsOne,
                    y = !!input$varsTwo,
-                   size = !!input$varsSix),
+                   size = !!rfp),
                shape = 21)
   
 })
@@ -599,6 +613,7 @@ plot_AvgXYCat_react <- reactive({
 
 ##### copilot (edited) code start
 plot_AvgXYNum_react <- reactive({
+  rfp <- rf_plot()
   df <- file1()
   #observe(input$XYBox) #effi- start/end
   
@@ -669,7 +684,7 @@ plot_AvgXYNum_react <- reactive({
     geom_point(aes(fill = !!input$varsFour,
                    x = !!input$varsOne,
                    y = !!input$varsTwo,
-                   size = !!input$varsSix),
+                   size = !!rfp),
                shape = 21)
   
 })
